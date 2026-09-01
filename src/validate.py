@@ -119,9 +119,9 @@ def validate_post_load() -> bool:
         except Exception:
             pass
 
-        # 4. Out-of-bounds Posted Date Check
+        # 4. Out-of-bounds Posted Date Check (valid recent snapshot dates 2020-2026)
         try:
-            cur.execute("SELECT COUNT(*) FROM job_postings_fact WHERE job_posted_date < '2022-12-31'::timestamp OR job_posted_date > '2023-12-31 23:59:59'::timestamp;")
+            cur.execute("SELECT COUNT(*) FROM job_postings_fact WHERE job_posted_date < '2020-01-01'::timestamp OR job_posted_date > '2026-12-31 23:59:59'::timestamp;")
             bad_dates = cur.fetchone()[0]
             date_status = "PASSED" if bad_dates == 0 else "FAILED"
             summary_data.append(["Date Range Bounds Check", f"{bad_dates:,} out of bounds", "0 out of bounds expected", date_status])
@@ -131,12 +131,15 @@ def validate_post_load() -> bool:
     conn.close()
 
     headers = ["Validation Check", "Measured Result", "Expectation", "Status"]
-    report = tabulate(summary_data, headers=headers, tablefmt="fancy_grid")
+    report = tabulate(summary_data, headers=headers, tablefmt="grid")
     
     print("\n" + "=" * 80)
     print("                DATA QUALITY VALIDATION SUMMARY REPORT                ")
     print("=" * 80)
-    print(report)
+    try:
+        print(report)
+    except UnicodeEncodeError:
+        print(report.encode("ascii", "replace").decode("ascii"))
     print("=" * 80 + "\n")
     
     return all_passed

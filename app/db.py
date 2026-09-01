@@ -21,15 +21,40 @@ def get_db_connection():
     """Attempt database connection via st.secrets or environment variables."""
     try:
         import psycopg2
-        host = st.secrets.get("postgres", {}).get("host", os.getenv("DB_HOST", "localhost"))
-        port = int(st.secrets.get("postgres", {}).get("port", os.getenv("DB_PORT", 5432)))
-        dbname = st.secrets.get("postgres", {}).get("dbname", os.getenv("DB_NAME", "job_market_db"))
-        user = st.secrets.get("postgres", {}).get("user", os.getenv("DB_USER", "postgres"))
-        password = st.secrets.get("postgres", {}).get("password", os.getenv("DB_PASSWORD", "postgres"))
         
-        conn = psycopg2.connect(
-            host=host, port=port, dbname=dbname, user=user, password=password, connect_timeout=3
-        )
+        # Check for connection string URI in Streamlit secrets or env vars
+        database_url = None
+        if hasattr(st, "secrets"):
+            database_url = st.secrets.get("DATABASE_URL") or st.secrets.get("postgres_url")
+        if not database_url:
+            database_url = os.getenv("DATABASE_URL") or os.getenv("POSTGRES_URL") or os.getenv("NEON_DATABASE_URL")
+            
+        if database_url:
+            kwargs = {"dsn": database_url, "connect_timeout": 5}
+            if "sslmode=" not in database_url and ("neon.tech" in database_url or os.getenv("DB_SSLMODE")):
+                kwargs["sslmode"] = os.getenv("DB_SSLMODE", "require")
+            return psycopg2.connect(**kwargs)
+            
+        secrets_pg = st.secrets.get("postgres", {}) if hasattr(st, "secrets") else {}
+        host = secrets_pg.get("host", os.getenv("DB_HOST", "localhost"))
+        port = int(secrets_pg.get("port", os.getenv("DB_PORT", 5432)))
+        dbname = secrets_pg.get("dbname", os.getenv("DB_NAME", "job_market_db"))
+        user = secrets_pg.get("user", os.getenv("DB_USER", "postgres"))
+        password = secrets_pg.get("password", os.getenv("DB_PASSWORD", "postgres"))
+        sslmode = secrets_pg.get("sslmode", os.getenv("DB_SSLMODE", "require" if host and "neon.tech" in host else None))
+        
+        kwargs = {
+            "host": host,
+            "port": port,
+            "dbname": dbname,
+            "user": user,
+            "password": password,
+            "connect_timeout": 5
+        }
+        if sslmode:
+            kwargs["sslmode"] = sslmode
+            
+        conn = psycopg2.connect(**kwargs)
         return conn
     except Exception as e:
         logger.warning(f"Database connection failed: {e}. Falling back to offline dataset engine.")

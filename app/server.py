@@ -15,11 +15,30 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+DATABASE_URL = os.getenv("DATABASE_URL") or os.getenv("POSTGRES_URL") or os.getenv("NEON_DATABASE_URL")
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = int(os.getenv("DB_PORT", 5432))
 DB_NAME = os.getenv("DB_NAME", "job_market_db")
 DB_USER = os.getenv("DB_USER", "postgres")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "hollowgoku")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "postgres")
+DB_SSLMODE = os.getenv("DB_SSLMODE", "require" if (DB_HOST and "neon.tech" in DB_HOST) or (DATABASE_URL and "neon.tech" in DATABASE_URL) else None)
+
+def _get_conn_kwargs():
+    if DATABASE_URL:
+        kwargs = {"dsn": DATABASE_URL}
+        if "sslmode=" not in DATABASE_URL and DB_SSLMODE:
+            kwargs["sslmode"] = DB_SSLMODE
+        return kwargs
+    kwargs = {
+        "host": DB_HOST,
+        "port": DB_PORT,
+        "dbname": DB_NAME,
+        "user": DB_USER,
+        "password": DB_PASSWORD,
+    }
+    if DB_SSLMODE:
+        kwargs["sslmode"] = DB_SSLMODE
+    return kwargs
 
 # In-memory response cache
 CACHE = {}
@@ -32,15 +51,12 @@ def init_db_pool():
     if DB_POOL is None:
         try:
             import psycopg2.pool
+            kwargs = _get_conn_kwargs()
             DB_POOL = psycopg2.pool.ThreadedConnectionPool(
                 minconn=1,
                 maxconn=10,
-                host=DB_HOST,
-                port=DB_PORT,
-                dbname=DB_NAME,
-                user=DB_USER,
-                password=DB_PASSWORD,
-                connect_timeout=3
+                connect_timeout=5,
+                **kwargs
             )
             logger.info("PostgreSQL connection pool initialized")
         except Exception as e:
@@ -56,9 +72,8 @@ def get_db_conn():
             logger.warning(f"Pool getconn fallback: {e}")
     try:
         import psycopg2
-        return psycopg2.connect(
-            host=DB_HOST, port=DB_PORT, dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD, connect_timeout=3
-        )
+        kwargs = _get_conn_kwargs()
+        return psycopg2.connect(connect_timeout=5, **kwargs)
     except Exception as e:
         logger.warning(f"Database connection error: {e}")
         return None

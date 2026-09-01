@@ -8,25 +8,20 @@ into the PostgreSQL job_market_db Star Schema and refresh Materialized Views.
 import os
 import json
 import logging
+import sys
 import psycopg2
 from psycopg2.extras import execute_batch
 from dotenv import load_dotenv
 
-load_dotenv()
+# Ensure parent directory is on sys.path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from src.config import get_db_connection_kwargs
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger("IngestNewDataset")
 
-DB_HOST = os.getenv("DB_HOST", "localhost")
-DB_PORT = int(os.getenv("DB_PORT", 5432))
-DB_NAME = os.getenv("DB_NAME", "job_market_db")
-DB_USER = os.getenv("DB_USER", "postgres")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "hollowgoku")
-
 def get_db_conn():
-    return psycopg2.connect(
-        host=DB_HOST, port=DB_PORT, dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD
-    )
+    return psycopg2.connect(**get_db_connection_kwargs())
 
 def categorize_skill_type(skill_name):
     s = skill_name.lower()
@@ -156,9 +151,36 @@ def run_ingestion():
         execute_batch(cur, "INSERT INTO skills_dim (skill_id, skills, type, canonical_skill_id, is_canonical) VALUES (%s, %s, %s, %s, %s) ON CONFLICT DO NOTHING;", new_skills_to_insert)
         conn.commit()
 
-    # 5. Process Company & Location
+    # 5. Process Company, Location, Platform, and Schedule dimensions
+    # Location
     cur.execute("SELECT location_id FROM location_dim WHERE country = 'United States' LIMIT 1;")
-    default_loc_id = cur.fetchone()[0]
+    loc_res = cur.fetchone()
+    if loc_res:
+        default_loc_id = loc_res[0]
+    else:
+        cur.execute("INSERT INTO location_dim (location_raw, city, country, is_remote_marker) VALUES ('Anywhere, United States', 'Anywhere', 'United States', FALSE) RETURNING location_id;")
+        default_loc_id = cur.fetchone()[0]
+    conn.commit()
+
+    # Platform
+    cur.execute("SELECT platform_id FROM platform_dim LIMIT 1;")
+    plat_res = cur.fetchone()
+    if plat_res:
+        default_plat_id = plat_res[0]
+    else:
+        cur.execute("INSERT INTO platform_dim (platform_name) VALUES ('via LinkedIn / Direct') RETURNING platform_id;")
+        default_plat_id = cur.fetchone()[0]
+    conn.commit()
+
+    # Schedule
+    cur.execute("SELECT schedule_id FROM schedule_dim LIMIT 1;")
+    sched_res = cur.fetchone()
+    if sched_res:
+        default_sched_id = sched_res[0]
+    else:
+        cur.execute("INSERT INTO schedule_dim (schedule_type, is_full_time, is_contract, is_part_time) VALUES ('Full-time', TRUE, FALSE, FALSE) RETURNING schedule_id;")
+        default_sched_id = cur.fetchone()[0]
+    conn.commit()
 
     company_records = [
         (800001, 'AI & NextGen Labs', None, 'https://google.com/search?q=AI+Labs', None),
@@ -196,8 +218,8 @@ def run_ingestion():
             job_id,
             comp_id,
             default_loc_id,
-            1, # platform
-            1, # schedule
+            default_plat_id,
+            default_sched_id,
             rf_id,
             title,
             title_short,
@@ -242,28 +264,24 @@ def run_ingestion():
 
     # 7. Refresh Materialized Views
     logger.info("Refreshing all Materialized Views...")
-    try:
-        cur.execute("SELECT refresh_all_materialized_views();")
-        conn.commit()
-        logger.info("[SUCCESS] Materialized Views refreshed successfully!")
-    except Exception as e:
-        logger.warning(f"Materialized View refresh note: {e}")
-        conn.rollback()
-        # Fallback refresh
-        mvs = [
-            'mv_top_skills_overall', 'mv_top_skills_by_role_family', 'mv_top_skills_by_category',
-            'mv_salary_by_role_seniority', 'mv_top_hiring_companies'
-        ]
-        for mv in mvs:
-            try:
-                cur.execute(f"REFRESH MATERIALIZED VIEW {mv};")
-                conn.commit()
-            except Exception:
-                conn.rollback()
+    mvs = [
+        'mv_top_skills_overall', 'mv_top_skills_by_role_family', 'mv_top_skills_by_category',
+        'mv_skill_demand_monthly', 'mv_salary_by_role_seniority', 'mv_skill_salary_premium',
+        'mv_top_hiring_companies', 'mv_remote_work_rates', 'mv_degree_requirement_rates',
+        'mv_health_insurance_rates', 'mv_pay_transparency', 'mv_platform_comparison'
+    ]
+    for mv in mvs:
+        try:
+            cur.execute(f"REFRESH MATERIALIZED VIEW {mv};")
+            conn.commit()
+            logger.info(f"  -> Refreshed {mv}")
+        except Exception as e:
+            logger.warning(f"  -> Could not refresh {mv}: {e}")
+            conn.rollback()
 
     cur.close()
     conn.close()
-    logger.info(f"🎉 Ingestion Complete! Merged {len(jobs_to_insert)} new postings into job_market_db!")
+    logger.info(f"🎉 Ingestion Complete! Merged {len(jobs_to_insert)} new postings into Neon database!")
 
 if __name__ == "__main__":
     run_ingestion()

@@ -212,13 +212,13 @@ GROUP BY p.platform_name, rf.role_family_id, rf.role_family_name;
 CREATE OR REPLACE FUNCTION refresh_all_materialized_views()
 RETURNS void AS $$
 BEGIN
-    REFRESH MATERIALIZED VIEW CONCURRENTLY mv_top_skills_overall;
+    REFRESH MATERIALIZED VIEW mv_top_skills_overall;
     REFRESH MATERIALIZED VIEW mv_top_skills_by_role_family;
     REFRESH MATERIALIZED VIEW mv_top_skills_by_category;
     REFRESH MATERIALIZED VIEW mv_skill_demand_monthly;
     REFRESH MATERIALIZED VIEW mv_salary_by_role_seniority;
-    REFRESH MATERIALIZED VIEW CONCURRENTLY mv_skill_salary_premium;
-    REFRESH MATERIALIZED VIEW CONCURRENTLY mv_top_hiring_companies;
+    REFRESH MATERIALIZED VIEW mv_skill_salary_premium;
+    REFRESH MATERIALIZED VIEW mv_top_hiring_companies;
     REFRESH MATERIALIZED VIEW mv_remote_work_rates;
     REFRESH MATERIALIZED VIEW mv_degree_requirement_rates;
     REFRESH MATERIALIZED VIEW mv_health_insurance_rates;

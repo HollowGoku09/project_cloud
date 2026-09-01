@@ -6,19 +6,13 @@ import pandas as pd
 import psycopg2
 from psycopg2.extensions import connection as PgConnection
 
-from src.config import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
+from src.config import get_db_connection_kwargs
 
 logger = logging.getLogger(__name__)
 
 def get_db_connection() -> PgConnection:
     """Establish and return a psycopg2 PostgreSQL database connection."""
-    conn = psycopg2.connect(
-        host=DB_HOST,
-        port=DB_PORT,
-        dbname=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD
-    )
+    conn = psycopg2.connect(**get_db_connection_kwargs())
     conn.autocommit = False
     return conn
 

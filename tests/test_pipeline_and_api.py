@@ -81,6 +81,13 @@ class TestPipelineAndAPI(unittest.TestCase):
         self.assertIn("potential_salary_boost", gap)
         self.assertIn("readiness_score", gap)
 
+    def test_neon_db_connection_kwargs(self):
+        """Verify get_db_connection_kwargs properly constructs connection dicts."""
+        from src.config import get_db_connection_kwargs
+        kwargs = get_db_connection_kwargs()
+        self.assertIsInstance(kwargs, dict)
+        self.assertTrue("dsn" in kwargs or "host" in kwargs)
+
 if __name__ == "__main__":
     unittest.main()
 

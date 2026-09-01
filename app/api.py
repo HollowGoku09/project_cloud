@@ -36,16 +36,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+DATABASE_URL = os.getenv("DATABASE_URL") or os.getenv("POSTGRES_URL") or os.getenv("NEON_DATABASE_URL")
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = int(os.getenv("DB_PORT", 5432))
 DB_NAME = os.getenv("DB_NAME", "job_market_db")
 DB_USER = os.getenv("DB_USER", "postgres")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "hollowgoku")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "postgres")
+DB_SSLMODE = os.getenv("DB_SSLMODE", "require" if (DB_HOST and "neon.tech" in DB_HOST) or (DATABASE_URL and "neon.tech" in DATABASE_URL) else None)
 
 def get_db():
-    return psycopg2.connect(
-        host=DB_HOST, port=DB_PORT, dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD
-    )
+    if DATABASE_URL:
+        kwargs = {"dsn": DATABASE_URL}
+        if "sslmode=" not in DATABASE_URL and DB_SSLMODE:
+            kwargs["sslmode"] = DB_SSLMODE
+        return psycopg2.connect(**kwargs)
+    
+    kwargs = {
+        "host": DB_HOST,
+        "port": DB_PORT,
+        "dbname": DB_NAME,
+        "user": DB_USER,
+        "password": DB_PASSWORD,
+    }
+    if DB_SSLMODE:
+        kwargs["sslmode"] = DB_SSLMODE
+    return psycopg2.connect(**kwargs)
 
 # -----------------------------------------------------------------------------
 # REST API ENDPOINTS
