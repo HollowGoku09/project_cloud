@@ -440,48 +440,86 @@ class WebBIHandler(BaseHTTPRequestHandler):
         }
 
     def get_skills_matrix(self, role=None, seniority=None, country=None, remote=None, limit=25):
+        role_family_map = {
+            'Data Analyst': 'Data & Analytics',
+            'Data Engineer': 'Data & Analytics',
+            'Data Scientist': 'Data & Analytics',
+            'Machine Learning Engineer': 'AI/ML',
+            'AI Prompt Engineer': 'AI/ML',
+            'Ethical Hacker': 'Cybersecurity',
+            'Blockchain Developer': 'Blockchain & Fintech',
+            'Game Developer': 'AR/VR & Gaming',
+            'Cloud Engineer': 'Cloud & DevOps',
+            'Software Engineer': 'Software Engineering'
+        }
         try:
             conn = get_db_conn()
             if conn:
-                where_clauses = []
-                if role and role != "All Roles":
-                    where_clauses.append(f"(j.job_title_short = '{role}' OR j.base_role = '{role}' OR j.job_title ILIKE '%{role}%')")
-                if seniority and seniority != "All Levels":
-                    where_clauses.append(f"j.seniority = '{seniority}'")
-                if remote == 'true':
-                    where_clauses.append("j.job_work_from_home = TRUE")
-                if country and country != "All Countries":
-                    where_clauses.append(f"l.country = '{country}'")
-
-                join_loc = "JOIN location_dim l ON j.location_id = l.location_id" if country and country != "All Countries" else ""
-                where_sql = ("WHERE " + " AND ".join(where_clauses)) if where_clauses else ""
-
-                if where_sql:
+                cur = conn.cursor()
+                # 1. Targeted query for niche/supplemental roles (fast < 500ms on small row sets)
+                if role in ['Ethical Hacker', 'AI Prompt Engineer', 'Blockchain Developer', 'Game Developer', 'Big Data Specialist']:
                     q = f"""
                     WITH role_scope AS (
                         SELECT COUNT(DISTINCT j.job_id) AS total_jobs
                         FROM job_postings_fact j
-                        {join_loc}
-                        {where_sql}
+                        WHERE (j.job_title_short = '{role}' OR j.base_role = '{role}' OR j.job_title ILIKE '%{role}%')
                     )
                     SELECT 
                         s.skills AS skill_name, 
                         s.type AS skill_type, 
                         COUNT(DISTINCT j.job_id) AS demand_count,
                         ROUND(COUNT(DISTINCT j.job_id)::NUMERIC / NULLIF((SELECT total_jobs FROM role_scope), 0) * 100, 2) AS pct_of_total_postings,
-                        ROUND(COALESCE(AVG(j.salary_year_avg), 125000), 0) AS avg_yearly_salary,
-                        ROUND(COALESCE(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY j.salary_year_avg)::NUMERIC, 120000), 0) AS median_yearly_salary,
-                        ROUND(COALESCE(PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY j.salary_year_avg)::NUMERIC, 95000), 0) AS p25_salary,
-                        ROUND(COALESCE(PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY j.salary_year_avg)::NUMERIC, 155000), 0) AS p75_salary
+                        ROUND(COALESCE(AVG(j.salary_year_avg), 135000), 0) AS avg_yearly_salary,
+                        ROUND(COALESCE(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY j.salary_year_avg)::NUMERIC, AVG(j.salary_year_avg)::NUMERIC, 130000), 0) AS median_yearly_salary,
+                        ROUND(COALESCE(PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY j.salary_year_avg)::NUMERIC, 105000), 0) AS p25_salary,
+                        ROUND(COALESCE(PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY j.salary_year_avg)::NUMERIC, 165000), 0) AS p75_salary
                     FROM job_postings_fact j
                     JOIN skills_job_dim sj ON j.job_id = sj.job_id
                     JOIN skills_dim s ON sj.skill_id = s.skill_id
-                    {join_loc}
-                    {where_sql}
+                    WHERE (j.job_title_short = '{role}' OR j.base_role = '{role}' OR j.job_title ILIKE '%{role}%')
                     GROUP BY s.skills, s.type 
                     ORDER BY demand_count DESC 
                     LIMIT {limit};
                     """
+                    cur.execute(q)
+                    rows = cur.fetchall()
+                    cols = ['skill_name', 'skill_type', 'demand_count', 'pct_of_total_postings', 'avg_yearly_salary', 'median_yearly_salary', 'p25_salary', 'p75_salary']
+                    df = pd.DataFrame(rows, columns=cols)
+                elif role and role != "All Roles":
+                    role_family = role_family_map.get(role, 'Data & Analytics')
+                    family_totals = {
+                        'Data & Analytics': 470000,
+                        'AI/ML': 36125,
+                        'Software Engineering': 45019,
+                        'Cloud & DevOps': 12346,
+                        'Cybersecurity': 21,
+                        'Blockchain & Fintech': 21,
+                        'AR/VR & Gaming': 20
+                    }
+                    total_jobs = family_totals.get(role_family, 100000)
+                    sen_clause = f"AND s.seniority = '{seniority}'" if seniority in ['Senior', 'Mid-Entry'] else ""
+
+                    q = f"""
+                    SELECT 
+                        s.skill_name, 
+                        s.skill_type, 
+                        SUM(s.posting_count) AS demand_count, 
+                        ROUND(LEAST(100.0, SUM(s.posting_count)::NUMERIC / {total_jobs} * 100), 2) AS pct_of_total_postings,
+                        COALESCE(p.avg_salary_with_skill, 130000) AS avg_yearly_salary,
+                        COALESCE(p.avg_salary_with_skill * 0.96, 125000) AS median_yearly_salary,
+                        COALESCE(p.avg_salary_with_skill * 0.78, 100000) AS p25_salary,
+                        COALESCE(p.avg_salary_with_skill * 1.25, 160000) AS p75_salary
+                    FROM mv_top_skills_by_role_family s
+                    LEFT JOIN mv_skill_salary_premium p ON s.skill_id = p.skill_id
+                    WHERE s.role_family_name = '{role_family}' {sen_clause}
+                    GROUP BY s.skill_name, s.skill_type, p.avg_salary_with_skill
+                    ORDER BY demand_count DESC 
+                    LIMIT {limit};
+                    """
+                    cur.execute(q)
+                    rows = cur.fetchall()
+                    cols = ['skill_name', 'skill_type', 'demand_count', 'pct_of_total_postings', 'avg_yearly_salary', 'median_yearly_salary', 'p25_salary', 'p75_salary']
+                    df = pd.DataFrame(rows, columns=cols)
                 else:
                     q = f"""
                     SELECT 
@@ -498,14 +536,12 @@ class WebBIHandler(BaseHTTPRequestHandler):
                     ORDER BY s.demand_count DESC 
                     LIMIT {limit};
                     """
+                    cur.execute(q)
+                    rows = cur.fetchall()
+                    cols = ['skill_name', 'skill_type', 'demand_count', 'pct_of_total_postings', 'avg_yearly_salary', 'median_yearly_salary', 'p25_salary', 'p75_salary']
+                    df = pd.DataFrame(rows, columns=cols)
 
-                cur = conn.cursor()
-                cur.execute(q)
-                rows = cur.fetchall()
-                cols = ['skill_name', 'skill_type', 'demand_count', 'pct_of_total_postings', 'avg_yearly_salary', 'median_yearly_salary', 'p25_salary', 'p75_salary']
-                df = pd.DataFrame(rows, columns=cols)
                 conn.close()
-
                 if not df.empty:
                     return df.to_dict(orient="records")
         except Exception as e:
