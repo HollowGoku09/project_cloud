@@ -288,36 +288,24 @@
         <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto justify-start lg:justify-end">
             <!-- Connectivity Pill -->
             <div
-                class="bg-emerald-950/40 border border-emerald-500/30 rounded-xl px-3 py-1.5 text-right flex items-center space-x-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                class="bg-emerald-950/40 border border-emerald-500/30 rounded-xl px-3.5 py-1.5 text-right flex items-center space-x-2.5 shadow-sm">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                 <div>
                     <span
-                        class="text-emerald-400 text-[10px] uppercase font-mono font-bold tracking-wider block">Warehouse
-                        Online</span>
-                    <span id="headerJobCount" class="text-slate-200 text-xs font-mono font-semibold">767,235
-                        Postings</span>
+                        class="text-emerald-400 text-[10px] uppercase font-mono font-bold tracking-wider block">Warehouse Online</span>
+                    <span id="headerJobCount" class="text-slate-200 text-xs font-mono font-semibold">767,235 Postings</span>
                 </div>
             </div>
 
-            <!-- Interactive Live Query Latency Button -->
-            <button onclick="checkLiveQueryLatency()" id="queryLatencyButton"
-                title="Click to ping live PostgreSQL backend & measure roundtrip query latency"
-                class="flex bg-blue-950/60 hover:bg-blue-900/80 border border-blue-500/40 hover:border-blue-400 rounded-xl px-3 py-1.5 text-right items-center space-x-2 transition-all cursor-pointer shadow-lg shadow-blue-500/10 group">
-                <div class="relative flex items-center justify-center">
-                    <span id="latencyPingDot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                </div>
-                <div>
-                    <span
-                        class="text-blue-400 text-[10px] uppercase font-mono font-bold tracking-wider block group-hover:text-blue-300">Query
-                        Latency</span>
-                    <span id="headerQueryLatency"
-                        class="text-slate-200 text-xs font-mono font-bold group-hover:text-white">&lt; 2.5ms</span>
-                </div>
-                <i class="fa-solid fa-bolt text-amber-400 text-xs ml-1 group-hover:scale-110 transition-transform"></i>
-            </button>
-
             <!-- Quick Toolbar Buttons -->
             <div class="flex items-center space-x-1.5 ml-auto lg:ml-0">
+                <!-- System Diagnostics Button -->
+                <button onclick="openDiagnosticsModal()" title="System Diagnostics & Engine Telemetry"
+                    class="bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-all">
+                    <i class="fa-solid fa-gauge-high text-amber-400"></i>
+                    <span class="hidden md:inline">Diagnostics</span>
+                </button>
+
                 <!-- Interactive Tour Button -->
                 <button onclick="startOnboardingTour()" title="Interactive Onboarding Tour & Feature Guide"
                     class="bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-blue-300 hover:text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all shadow-lg shadow-blue-500/10">
@@ -1154,6 +1142,80 @@
                 <span><i class="fa-solid fa-share-nodes text-indigo-400 mr-2"></i> Copy Shareable Workspace URL</span>
                 <span class="text-[10px] text-slate-500 font-mono">Action</span>
             </div>
+            <div onclick="executeCommand('diagnostics')"
+                class="p-2.5 rounded-xl hover:bg-slate-800 cursor-pointer flex justify-between items-center text-slate-200 border-t border-slate-800/80 mt-1 pt-2">
+                <span><i class="fa-solid fa-gauge-high text-amber-400 mr-2"></i> System Diagnostics & Latency Telemetry</span>
+                <span class="text-[10px] text-amber-400 font-mono">Telemetry</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SYSTEM DIAGNOSTICS & TELEMETRY MODAL -->
+    <div id="diagnosticsOverlay" onclick="closeDiagnosticsModal()"
+        class="fixed inset-0 bg-black/75 backdrop-blur-md z-50 hidden no-print"></div>
+    <div id="diagnosticsModal"
+        class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-lg bg-slate-900 border border-slate-700/80 rounded-2xl z-50 p-6 shadow-2xl hidden no-print text-white">
+        <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-800">
+            <div class="flex items-center space-x-2.5">
+                <span class="p-2 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-400 font-bold text-sm">
+                    <i class="fa-solid fa-gauge-high"></i>
+                </span>
+                <div>
+                    <h3 class="text-base font-black tracking-tight text-white">System Diagnostics & Telemetry</h3>
+                    <p class="text-[11px] text-slate-400 font-mono">Real-Time Cloud Warehouse Performance</p>
+                </div>
+            </div>
+            <button onclick="closeDiagnosticsModal()"
+                class="text-slate-400 hover:text-white text-sm p-1.5 rounded-lg hover:bg-slate-800 transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Telemetry Grid -->
+        <div class="grid grid-cols-2 gap-3 mb-5 text-xs">
+            <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-slate-400 text-[11px]">Query Roundtrip</span>
+                    <span id="diagPingDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                </div>
+                <div id="diagLatencyVal" class="text-xl font-black font-mono text-emerald-400">-- ms</div>
+            </div>
+            <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+                <div class="text-slate-400 text-[11px] mb-1">Database State</div>
+                <div id="diagDbStatus" class="font-mono font-bold text-emerald-400 text-sm">Online (Connected)</div>
+            </div>
+            <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+                <div class="text-slate-400 text-[11px] mb-1">PostgreSQL Postings</div>
+                <div class="font-mono font-bold text-white text-sm">767,235 Rows</div>
+            </div>
+            <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+                <div class="text-slate-400 text-[11px] mb-1">API Cache Keys</div>
+                <div id="diagCacheEntries" class="font-mono font-bold text-cyan-400 text-sm">Active</div>
+            </div>
+        </div>
+
+        <!-- Technical Architecture Info -->
+        <div class="p-3 bg-blue-950/40 border border-blue-500/30 rounded-xl text-[11px] text-slate-300 space-y-1 mb-5">
+            <div class="font-bold text-blue-300 flex items-center gap-1.5">
+                <i class="fa-solid fa-microchip"></i> Engine Architecture
+            </div>
+            <div>Neon Serverless PostgreSQL • 12 Active Materialized Views • In-Memory Cache • Sub-Second Analytics</div>
+        </div>
+
+        <!-- Footer Action -->
+        <div class="flex justify-between items-center pt-3 border-t border-slate-800">
+            <span id="diagTimestamp" class="text-[10px] text-slate-500 font-mono">Ready</span>
+            <div class="flex space-x-2">
+                <button onclick="runSystemDiagnosticPing()"
+                    class="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition flex items-center space-x-1.5 shadow-md">
+                    <i class="fa-solid fa-bolt text-amber-300"></i>
+                    <span>Ping Database</span>
+                </button>
+                <button onclick="closeDiagnosticsModal()"
+                    class="px-3.5 py-1.5 rounded-xl border border-slate-700 text-slate-300 hover:text-white text-xs font-semibold">
+                    Close
+                </button>
+            </div>
         </div>
     </div>
 
@@ -1381,46 +1443,73 @@
             if (tabId === 'employers') loadEmployers();
         }
 
-        // Fetch API Helper with High-Resolution Latency Measurement
+        // Fetch API Helper with High-Resolution Timing
         async function fetchAPI(endpoint) {
-            const t0 = performance.now();
             try {
                 const res = await fetch(endpoint);
+                if (!res.ok) {
+                    console.warn(`API response not OK (${res.status}) for ${endpoint}`);
+                    return null;
+                }
                 const data = await res.json();
-                const latency = (performance.now() - t0).toFixed(1);
-                const latencyEl = document.getElementById('headerQueryLatency');
-                const pingDot = document.getElementById('latencyPingDot');
-                if (latencyEl) {
-                    latencyEl.innerText = `${latency}ms`;
-                }
-                if (pingDot) {
-                    pingDot.className = latency < 20 ? 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse' : 'w-2 h-2 rounded-full bg-amber-400 animate-pulse';
-                }
                 return data;
             } catch (err) {
-                console.error("API error:", err);
+                console.error("API fetch error:", err);
                 return null;
             }
         }
 
-        async function checkLiveQueryLatency() {
+        // SYSTEM DIAGNOSTICS & TELEMETRY CONTROLLER
+        function openDiagnosticsModal() {
+            document.getElementById('diagnosticsOverlay').classList.remove('hidden');
+            document.getElementById('diagnosticsModal').classList.remove('hidden');
+            runSystemDiagnosticPing();
+        }
+
+        function closeDiagnosticsModal() {
+            document.getElementById('diagnosticsOverlay').classList.add('hidden');
+            document.getElementById('diagnosticsModal').classList.add('hidden');
+        }
+
+        async function runSystemDiagnosticPing() {
+            const pingEl = document.getElementById('diagLatencyVal');
+            const statusEl = document.getElementById('diagDbStatus');
+            const cacheEl = document.getElementById('diagCacheEntries');
+            const timeEl = document.getElementById('diagTimestamp');
+            const pingDot = document.getElementById('diagPingDot');
+
+            if (pingEl) pingEl.innerText = 'Pinging...';
+            if (pingDot) pingDot.className = 'w-3 h-3 rounded-full bg-amber-400 animate-ping';
+
             const t0 = performance.now();
             try {
                 const res = await fetch('/api/health');
                 const data = await res.json();
                 const latency = (performance.now() - t0).toFixed(1);
-                const latencyEl = document.getElementById('headerQueryLatency');
-                const pingDot = document.getElementById('latencyPingDot');
-                if (latencyEl) latencyEl.innerText = `${latency}ms`;
-                if (pingDot) {
-                    pingDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-ping';
-                    setTimeout(() => {
-                        if (pingDot) pingDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
-                    }, 600);
+
+                if (pingEl) {
+                    pingEl.innerHTML = `${latency} <span class="text-xs font-sans text-slate-400">ms</span>`;
                 }
-                showToast(`⚡ Live API Query Latency: ${latency}ms | DB: ${data.database_status} | Cache Entries: ${data.cache_entries}`, 'success');
+                if (statusEl) {
+                    statusEl.innerText = data.database_status === 'online' ? 'Online (Connected)' : 'Offline / Standby';
+                    statusEl.className = data.database_status === 'online' ? 'font-mono font-bold text-emerald-400' : 'font-mono font-bold text-rose-400';
+                }
+                if (cacheEl) {
+                    cacheEl.innerText = `${data.cache_entries || 0} active keys`;
+                }
+                if (timeEl) {
+                    timeEl.innerText = data.timestamp || new Date().toISOString();
+                }
+                if (pingDot) {
+                    pingDot.className = 'w-3 h-3 rounded-full bg-emerald-400 animate-pulse';
+                }
             } catch (err) {
-                showToast('API Latency Ping: Server unreachable', 'info');
+                if (pingEl) pingEl.innerText = 'Timeout / Error';
+                if (statusEl) {
+                    statusEl.innerText = 'Offline';
+                    statusEl.className = 'font-mono font-bold text-rose-400';
+                }
+                if (pingDot) pingDot.className = 'w-3 h-3 rounded-full bg-rose-500';
             }
         }
 
@@ -2113,6 +2202,8 @@
                 printExecutiveReport();
             } else if (cmd === 'share') {
                 copyShareableLink();
+            } else if (cmd === 'diagnostics') {
+                openDiagnosticsModal();
             }
         }
 
@@ -2343,6 +2434,7 @@
                 closeCommandPalette();
                 closeJobDrawer();
                 closeCurrencyConverterModal();
+                closeDiagnosticsModal();
                 closeOnboardingTour();
             }
         });
