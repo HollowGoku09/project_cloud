@@ -347,92 +347,98 @@
     </header>
 
     <!-- GLOBAL STICKY FILTER BAR -->
+    <!-- DYNAMIC DASHBOARD FILTER & SLICER BAR (2-TIER EXECUTIVE DESIGN) -->
     <section
-        class="sticky top-2 z-30 mb-6 bg-slate-900/90 backdrop-blur-xl border border-slate-800/90 rounded-2xl p-3 md:p-4 shadow-2xl no-print">
-        <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
-
-            <!-- Quick Role Slicer Chips -->
-            <div class="flex items-center space-x-2 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
-                <span
-                    class="text-xs text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5 whitespace-nowrap">
-                    <i class="fa-solid fa-filter text-blue-400"></i> Role:
-                </span>
-                <div class="flex gap-1.5 text-xs" id="roleChipContainer">
-                    <button onclick="setFilter('role', 'All Roles')"
-                        class="role-chip active px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 whitespace-nowrap">All
-                        Roles</button>
-                    <button onclick="setFilter('role', 'Data Engineer')"
-                        class="role-chip px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 whitespace-nowrap">Data
-                        Engineer</button>
-                    <button onclick="setFilter('role', 'Data Analyst')"
-                        class="role-chip px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 whitespace-nowrap">Data
-                        Analyst</button>
-                    <button onclick="setFilter('role', 'Data Scientist')"
-                        class="role-chip px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 whitespace-nowrap">Data
-                        Scientist</button>
-                    <button onclick="setFilter('role', 'Machine Learning Engineer')"
-                        class="role-chip px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 whitespace-nowrap">ML
-                        Engineer</button>
-                    <button onclick="setFilter('role', 'AI Prompt Engineer')"
-                        class="role-chip px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 whitespace-nowrap">🤖
-                        AI Prompt Eng</button>
-                    <button onclick="setFilter('role', 'Ethical Hacker')"
-                        class="role-chip px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 whitespace-nowrap">🛡️
-                        Ethical Hacker</button>
-                    <button onclick="setFilter('role', 'Big Data Specialist')"
-                        class="role-chip px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 whitespace-nowrap">⚡
-                        Big Data</button>
-                    <button onclick="setFilter('role', 'Blockchain Developer')"
-                        class="role-chip px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 whitespace-nowrap">🔗
-                        Blockchain</button>
-                    <button onclick="setFilter('role', 'Game Developer')"
-                        class="role-chip px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 whitespace-nowrap">🕹️
-                        Game Dev</button>
-                    <button onclick="setFilter('role', 'Cloud Engineer')"
-                        class="role-chip px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 whitespace-nowrap">Cloud
-                        Engineer</button>
-                    <button onclick="setFilter('role', 'Software Engineer')"
-                        class="role-chip px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 whitespace-nowrap">Software
-                        Engineer</button>
-                </div>
+        class="sticky top-2 z-30 mb-6 bg-slate-900/95 backdrop-blur-xl border border-slate-800/90 rounded-2xl p-3.5 md:p-4 shadow-2xl no-print space-y-3">
+        
+        <!-- TIER 1: Primary Role Slicers -->
+        <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+            <div class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-400 shrink-0">
+                <i class="fa-solid fa-layer-group text-blue-400"></i>
+                <span>Role:</span>
             </div>
+            <div class="flex flex-wrap items-center gap-1.5 text-xs flex-1" id="roleChipContainer">
+                <button onclick="setFilter('role', 'All Roles')"
+                    class="role-chip active px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700 hover:text-white transition">All Roles</button>
+                <button onclick="setFilter('role', 'Data Engineer')"
+                    class="role-chip px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700 hover:text-white transition">Data Engineer</button>
+                <button onclick="setFilter('role', 'Data Analyst')"
+                    class="role-chip px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700 hover:text-white transition">Data Analyst</button>
+                <button onclick="setFilter('role', 'Data Scientist')"
+                    class="role-chip px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700 hover:text-white transition">Data Scientist</button>
+                <button onclick="setFilter('role', 'Machine Learning Engineer')"
+                    class="role-chip px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700 hover:text-white transition">ML Engineer</button>
+                <button onclick="setFilter('role', 'AI Prompt Engineer')"
+                    class="role-chip px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700 hover:text-white transition">🤖 AI Prompt Eng</button>
+                <button onclick="setFilter('role', 'Ethical Hacker')"
+                    class="role-chip px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700 hover:text-white transition">🛡️ Ethical Hacker</button>
+                <button onclick="setFilter('role', 'Big Data Specialist')"
+                    class="role-chip px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700 hover:text-white transition">⚡ Big Data</button>
+                <button onclick="setFilter('role', 'Blockchain Developer')"
+                    class="role-chip px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700 hover:text-white transition">🔗 Blockchain</button>
+                <button onclick="setFilter('role', 'Game Developer')"
+                    class="role-chip px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700 hover:text-white transition">🕹️ Game Dev</button>
+                <button onclick="setFilter('role', 'Cloud Engineer')"
+                    class="role-chip px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700 hover:text-white transition">Cloud Engineer</button>
+                <button onclick="setFilter('role', 'Software Engineer')"
+                    class="role-chip px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700 hover:text-white transition">Software Engineer</button>
+            </div>
+        </div>
 
-            <!-- Dropdown Filters (Seniority, Country, Salary Preset, Remote, Currency) -->
-            <div class="flex flex-wrap items-center gap-2 text-xs">
+        <!-- TIER 2: Granular Filters & Tools Toolbar -->
+        <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-2.5 pt-2.5 border-t border-slate-800/80 text-xs">
+            <!-- Left Group: Criteria Filters -->
+            <div class="flex flex-wrap items-center gap-2">
                 <!-- Seniority Dropdown -->
-                <select id="senioritySelect" onchange="setFilter('seniority', this.value)"
-                    class="bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-3 py-1.5 focus:border-blue-500 focus:outline-none cursor-pointer">
-                    <option value="All Levels">All Seniorities</option>
-                    <option value="Senior">Senior Level</option>
-                    <option value="Mid-Entry">Mid-Entry Level</option>
-                </select>
+                <div class="relative">
+                    <select id="senioritySelect" onchange="setFilter('seniority', this.value)"
+                        class="bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-200 rounded-xl px-3 py-1.5 focus:border-blue-500 focus:outline-none cursor-pointer transition">
+                        <option value="All Levels">All Seniorities</option>
+                        <option value="Senior">Senior Level</option>
+                        <option value="Mid-Entry">Mid-Entry Level</option>
+                    </select>
+                </div>
 
                 <!-- Country Dropdown -->
-                <select id="countrySelect" onchange="setFilter('country', this.value)"
-                    class="bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-3 py-1.5 focus:border-blue-500 focus:outline-none cursor-pointer">
-                    <option value="All Countries">All Countries</option>
-                    <option value="United States">United States</option>
-                    <option value="United Kingdom">United Kingdom</option>
-                    <option value="Canada">Canada</option>
-                    <option value="Germany">Germany</option>
-                    <option value="India">India</option>
-                    <option value="Ghana">Ghana</option>
-                    <option value="Nigeria">Nigeria</option>
-                </select>
+                <div class="relative">
+                    <select id="countrySelect" onchange="setFilter('country', this.value)"
+                        class="bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-200 rounded-xl px-3 py-1.5 focus:border-blue-500 focus:outline-none cursor-pointer transition">
+                        <option value="All Countries">All Countries (160 Markets)</option>
+                        <option value="United States">United States</option>
+                        <option value="United Kingdom">United Kingdom</option>
+                        <option value="Canada">Canada</option>
+                        <option value="Germany">Germany</option>
+                        <option value="India">India</option>
+                        <option value="Ghana">Ghana</option>
+                        <option value="Nigeria">Nigeria</option>
+                    </select>
+                </div>
 
                 <!-- Salary Preset Slicer -->
-                <select id="salaryMinSelect" onchange="setFilter('salaryMin', this.value)"
-                    class="bg-slate-950 border border-slate-800 text-emerald-400 font-semibold rounded-xl px-3 py-1.5 focus:border-emerald-500 focus:outline-none cursor-pointer">
-                    <option value="0">All Salaries</option>
-                    <option value="80000">&gt; $80,000/yr</option>
-                    <option value="120000">&gt; $120,000/yr</option>
-                    <option value="160000">&gt; $160,000/yr</option>
-                </select>
+                <div class="relative">
+                    <select id="salaryMinSelect" onchange="setFilter('salaryMin', this.value)"
+                        class="bg-slate-950 border border-slate-800 hover:border-slate-700 text-emerald-400 font-semibold rounded-xl px-3 py-1.5 focus:border-emerald-500 focus:outline-none cursor-pointer transition">
+                        <option value="0">All Salaries</option>
+                        <option value="80000">&gt; $80,000/yr</option>
+                        <option value="120000">&gt; $120,000/yr</option>
+                        <option value="160000">&gt; $160,000/yr</option>
+                    </select>
+                </div>
 
+                <!-- Remote Toggle Button -->
+                <button id="remoteToggleBtn" onclick="toggleRemoteFilter()"
+                    class="bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-400 rounded-xl px-3 py-1.5 flex items-center space-x-1.5 transition">
+                    <i class="fa-solid fa-house-laptop text-emerald-400"></i>
+                    <span id="remoteToggleText">Remote: OFF</span>
+                </button>
+            </div>
+
+            <!-- Right Group: Currency & Actions -->
+            <div class="flex flex-wrap items-center gap-2">
                 <!-- Currency Selector Dropdown -->
                 <div
-                    class="flex items-center space-x-1.5 bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 rounded-xl px-2.5 py-1.5 shadow-md">
-                    <i class="fa-solid fa-coins text-amber-400"></i>
+                    class="flex items-center space-x-1.5 bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 rounded-xl px-2.5 py-1.5 shadow-sm hover:border-emerald-500/50 transition">
+                    <i class="fa-solid fa-coins text-amber-400 text-xs"></i>
                     <select id="currencySelect" onchange="setCurrency(this.value)"
                         class="bg-transparent text-emerald-300 font-bold font-mono focus:outline-none cursor-pointer text-xs">
                         <option value="USD" class="bg-slate-900 text-white">🇺🇸 USD ($)</option>
@@ -449,32 +455,23 @@
 
                 <!-- Currency Converter Button -->
                 <button onclick="openCurrencyConverterModal()"
-                    class="bg-gradient-to-r from-emerald-600/30 to-blue-600/30 hover:from-emerald-600/50 hover:to-blue-600/50 text-emerald-300 border border-emerald-500/40 rounded-xl px-3 py-1.5 flex items-center space-x-1.5 font-bold shadow-md hover:scale-105 transition-all">
+                    class="bg-emerald-950/40 hover:bg-emerald-900/50 text-emerald-300 border border-emerald-500/30 rounded-xl px-3 py-1.5 flex items-center space-x-1.5 font-bold shadow-sm transition">
                     <i class="fa-solid fa-calculator text-amber-400"></i>
                     <span>Converter</span>
                 </button>
 
-                <!-- Remote Toggle Button -->
-                <button id="remoteToggleBtn" onclick="toggleRemoteFilter()"
-                    class="bg-slate-950 border border-slate-800 text-slate-400 rounded-xl px-3 py-1.5 flex items-center space-x-1.5 hover:border-blue-500 transition-all">
-                    <i class="fa-solid fa-house-laptop text-emerald-400"></i>
-                    <span id="remoteToggleText">Remote: OFF</span>
-                </button>
-
                 <!-- Reset Filters Button -->
                 <button onclick="resetAllFilters()"
-                    class="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 rounded-xl px-3 py-1.5 flex items-center space-x-1 transition-all">
-                    <i class="fa-solid fa-rotate-left"></i>
+                    class="bg-slate-800/60 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/60 rounded-xl px-3 py-1.5 flex items-center space-x-1 transition">
+                    <i class="fa-solid fa-rotate-left text-slate-400"></i>
                     <span>Reset</span>
                 </button>
             </div>
         </div>
 
-        <!-- Filter Active Breadcrumb Indicator -->
-        <div
-            class="mt-2.5 text-[11px] text-slate-400 flex flex-wrap items-center justify-between border-t border-slate-800/80 pt-2 gap-2">
-            <span id="activeFilterSummary"><i class="fa-solid fa-sliders text-blue-400"></i> Active Filter: <b>All
-                    Roles</b> | <b>All Levels</b> | <b>Global Scope</b></span>
+        <!-- Filter Active Breadcrumb Summary -->
+        <div class="pt-2 border-t border-slate-800/60 text-[11px] text-slate-400">
+            <span id="activeFilterSummary"><i class="fa-solid fa-sliders text-blue-400"></i> Active Filter: <b>All Roles</b> | <b>All Levels</b> | <b>Global Scope</b></span>
         </div>
     </section>
 
