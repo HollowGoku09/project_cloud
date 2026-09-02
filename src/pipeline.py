@@ -159,6 +159,27 @@ def run_full_pipeline() -> None:
         bridge_elapsed = time.time() - bridge_start
         logger.info(f"Completed bridge ETL stage: Loaded {total_bridge_loaded:,} rows in {bridge_elapsed:.2f}s")
         
+        logger.info("=== REFRESHING MATERIALIZED VIEWS ===")
+        try:
+            with conn.cursor() as cur:
+                cur.execute("SELECT refresh_all_materialized_views();")
+            conn.commit()
+            logger.info("All Materialized Views refreshed successfully.")
+        except Exception as mv_err:
+            logger.warning(f"Error calling refresh_all_materialized_views: {mv_err}. Trying individual refresh...")
+            mv_list = [
+                'mv_top_skills_overall', 'mv_top_skills_by_role_family', 'mv_top_skills_by_category',
+                'mv_skill_demand_monthly', 'mv_salary_by_role_seniority', 'mv_skill_salary_premium',
+                'mv_top_hiring_companies', 'mv_remote_work_rates', 'mv_degree_requirement_rates',
+                'mv_health_insurance_rates', 'mv_pay_transparency', 'mv_platform_comparison'
+            ]
+            for mv in mv_list:
+                try:
+                    with conn.cursor() as cur:
+                        cur.execute(f"REFRESH MATERIALIZED VIEW {mv};")
+                    conn.commit()
+                except Exception as ex:
+                    logger.warning(f"Could not refresh {mv}: {ex}")
     finally:
         conn.close()
         
