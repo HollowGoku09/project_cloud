@@ -134,11 +134,24 @@ class WebBIHandler(BaseHTTPRequestHandler):
         path = parsed.path
         params = parse_qs(parsed.query)
 
-        # Serve static frontend application
+        # Serve static frontend application & assets
         if path == "/" or path == "/index.html":
             file_path = os.path.join(os.path.dirname(__file__), "index.html")
             if os.path.exists(file_path):
                 self._set_headers(content_type="text/html")
+                with open(file_path, "rb") as f:
+                    self.wfile.write(f.read())
+                return
+            else:
+                self._set_headers(status=404)
+                self.wfile.write(b"404 Not Found")
+                return
+
+        elif path == "/app.js" or path.endswith(".js"):
+            file_name = os.path.basename(path)
+            file_path = os.path.join(os.path.dirname(__file__), file_name)
+            if os.path.exists(file_path):
+                self._set_headers(content_type="application/javascript")
                 with open(file_path, "rb") as f:
                     self.wfile.write(f.read())
                 return

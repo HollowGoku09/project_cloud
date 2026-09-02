@@ -8,12 +8,20 @@
     {
       "src": "app/index.html",
       "use": "@vercel/static"
+    },
+    {
+      "src": "app/app.js",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
       "dest": "api/index.py"
+    },
+    {
+      "src": "/app.js",
+      "dest": "app/app.js"
     },
     {
       "src": "/(.*)",
