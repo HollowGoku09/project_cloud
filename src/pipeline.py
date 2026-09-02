@@ -142,7 +142,12 @@ def run_full_pipeline() -> None:
         total_bridge_loaded = 0
         total_bridge_rejected = 0
         
+        from src.config import MAX_BRIDGE_ROWS
+        
         for idx, chunk in enumerate(extract_skills_job()):
+            if MAX_BRIDGE_ROWS > 0 and total_bridge_loaded >= MAX_BRIDGE_ROWS:
+                logger.info(f"Reached MAX_BRIDGE_ROWS safe cap ({MAX_BRIDGE_ROWS:,}). Concluded bridge loading to preserve cloud storage.")
+                break
             total_bridge_read += len(chunk)
             df_valid_b, df_rej_b = transform_skills_job_chunk(chunk, valid_job_ids, skill_id_set)
             
@@ -158,6 +163,15 @@ def run_full_pipeline() -> None:
 
         bridge_elapsed = time.time() - bridge_start
         logger.info(f"Completed bridge ETL stage: Loaded {total_bridge_loaded:,} rows in {bridge_elapsed:.2f}s")
+        
+        logger.info("=== OPTIMIZING QUERY STATISTICS (ANALYZE) ===")
+        try:
+            with conn.cursor() as cur:
+                cur.execute("ANALYZE;")
+            conn.commit()
+            logger.info("Database statistics analyzed successfully.")
+        except Exception as anz_err:
+            logger.warning(f"Could not run ANALYZE: {anz_err}")
         
         logger.info("=== REFRESHING MATERIALIZED VIEWS ===")
         try:

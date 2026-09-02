@@ -1440,7 +1440,9 @@
 
             const upliftRaw = kpis.top_combo_uplift_usd || 34200;
             document.getElementById('kpiComboUplift').innerText = `${formatSalary(upliftRaw, '+')}/yr Salary Boost`;
-            document.getElementById('kpiJobShare').innerText = `${(((kpis.total_postings || 0) / 766167) * 100).toFixed(1)}% of Market`;
+            const share = (((kpis.total_postings || 0) / 767235) * 100);
+            const shareStr = share >= 1 ? `${share.toFixed(1)}% of Market` : (share > 0 ? `${share.toFixed(2)}% of Market` : `0.0% of Market`);
+            document.getElementById('kpiJobShare').innerText = shareStr;
         }
 
         // Refresh Main Dashboard (KPIs + Demand Chart)

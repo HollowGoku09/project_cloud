@@ -83,7 +83,7 @@ def load_top_skills(role_family=None, seniority=None):
             if role_family and role_family != "All Role Families":
                 q = f"""
                 SELECT skill_name, skill_type, SUM(posting_count) AS demand_count,
-                       ROUND(SUM(posting_count)::NUMERIC / 766167 * 100, 2) AS pct_of_total_postings
+                       ROUND(SUM(posting_count)::NUMERIC / 767235 * 100, 2) AS pct_of_total_postings
                 FROM mv_top_skills_by_role_family
                 WHERE role_family_name = '{role_family}'
                 """
@@ -139,7 +139,13 @@ def load_salary_insights():
         {"role_family_name": "Cloud & DevOps", "seniority": "Senior", "country": "United States", "total_postings": 3940, "postings_with_salary": 218, "pct_disclosed": 5.53, "avg_yearly_salary": 155000, "median_yearly_salary": 150000},
         {"role_family_name": "Cloud & DevOps", "seniority": "Mid-Entry", "country": "United States", "total_postings": 8406, "postings_with_salary": 406, "pct_disclosed": 4.83, "avg_yearly_salary": 108000, "median_yearly_salary": 105000},
         {"role_family_name": "AI/ML", "seniority": "Senior", "country": "United States", "total_postings": 8310, "postings_with_salary": 476, "pct_disclosed": 5.73, "avg_yearly_salary": 178000, "median_yearly_salary": 172000},
-        {"role_family_name": "AI/ML", "seniority": "Mid-Entry", "country": "United States", "total_postings": 27815, "postings_with_salary": 1195, "pct_disclosed": 4.30, "avg_yearly_salary": 125000, "median_yearly_salary": 120000}
+        {"role_family_name": "AI/ML", "seniority": "Mid-Entry", "country": "United States", "total_postings": 27815, "postings_with_salary": 1195, "pct_disclosed": 4.30, "avg_yearly_salary": 125000, "median_yearly_salary": 120000},
+        {"role_family_name": "Cybersecurity", "seniority": "Senior", "country": "United States", "total_postings": 12, "postings_with_salary": 12, "pct_disclosed": 100.0, "avg_yearly_salary": 179400, "median_yearly_salary": 179400},
+        {"role_family_name": "Cybersecurity", "seniority": "Mid-Entry", "country": "United States", "total_postings": 11, "postings_with_salary": 11, "pct_disclosed": 100.0, "avg_yearly_salary": 138000, "median_yearly_salary": 138000},
+        {"role_family_name": "Blockchain & Fintech", "seniority": "Senior", "country": "United States", "total_postings": 10, "postings_with_salary": 10, "pct_disclosed": 100.0, "avg_yearly_salary": 184600, "median_yearly_salary": 184600},
+        {"role_family_name": "Blockchain & Fintech", "seniority": "Mid-Entry", "country": "United States", "total_postings": 10, "postings_with_salary": 10, "pct_disclosed": 100.0, "avg_yearly_salary": 142000, "median_yearly_salary": 142000},
+        {"role_family_name": "AR/VR & Gaming", "seniority": "Senior", "country": "United States", "total_postings": 20, "postings_with_salary": 20, "pct_disclosed": 100.0, "avg_yearly_salary": 162500, "median_yearly_salary": 162500},
+        {"role_family_name": "AR/VR & Gaming", "seniority": "Mid-Entry", "country": "United States", "total_postings": 20, "postings_with_salary": 20, "pct_disclosed": 100.0, "avg_yearly_salary": 125000, "median_yearly_salary": 125000}
     ]
     return pd.DataFrame(records)
 

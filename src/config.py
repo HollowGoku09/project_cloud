@@ -44,6 +44,8 @@ def get_db_connection_kwargs() -> dict:
 # Feature Flags & Processing Settings
 EXCLUDE_SUDAN = os.getenv("EXCLUDE_SUDAN", "True").lower() in ("true", "1", "yes")
 CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", 100000))
+MAX_BRIDGE_ROWS = int(os.getenv("MAX_BRIDGE_ROWS", 1800000))  # Capped to 1.8M bridge records to comfortably fit within Neon 512MB free tier
+
 
 # -----------------------------------------------------------------------------
 # Business Mapping Rules
