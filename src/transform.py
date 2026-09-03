@@ -16,7 +16,6 @@ from src.config import (
 
 logger = logging.getLogger(__name__)
 
-# Ensure rejects directory exists
 DATA_REJECTS_DIR.mkdir(parents=True, exist_ok=True)
 
 def log_rejected_rows(df_rejected: pd.DataFrame, source_name: str) -> None:
@@ -178,7 +177,6 @@ def transform_job_postings_chunk(
     df['seniority'] = np.where(is_senior, 'Senior', 'Mid-Entry')
     df['base_role'] = np.where(is_senior, df['job_title_short'].str.replace('Senior ', '', regex=False), df['job_title_short'])
     
-    # Fill missing job_title with job_title_short
     df['job_title'] = df['job_title'].fillna(df['job_title_short']).fillna('Unknown Title')
     
     df['role_family_id'] = df['job_title_short'].map(role_fam_lookup)

@@ -4,7 +4,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-# Page Configuration
 st.set_page_config(
     page_title="DataNerd.tech Web BI Platform 2023",
     page_icon="📊",
@@ -12,7 +11,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Styling
 st.markdown(
     """
     <style>
@@ -40,10 +38,9 @@ from app.db import (
     load_skill_salary_premiums
 )
 
-# Render Global Vintage Banner
 render_vintage_banner()
 
-# Web BI Navigation Sidebar
+# Navigation Sidebar
 st.sidebar.markdown("## 📊 DataNerd Web BI")
 st.sidebar.caption("🟢 **Warehouse Online** • ⚡ **Query Latency < 2.0ms**")
 page = st.sidebar.radio(
@@ -59,7 +56,6 @@ page = st.sidebar.radio(
     ]
 )
 
-# DataNerd Role Filter Slicers
 st.sidebar.markdown("---")
 st.sidebar.markdown("### 🎛️ DataNerd Role Filter")
 

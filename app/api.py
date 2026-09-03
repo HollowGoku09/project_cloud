@@ -27,7 +27,6 @@ app = FastAPI(
     version="2.0.0"
 )
 
-# Enable CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -129,7 +128,6 @@ def get_top_skills(
         return df.to_dict(orient="records")
     except Exception as e:
         logger.error(f"Top Skills API error: {e}")
-        # Fallback response
         skills = [
             {"skill_name": "Python", "skill_type": "programming", "demand_count": 238420, "pct_of_total_postings": 31.12},
             {"skill_name": "SQL", "skill_type": "programming", "demand_count": 214580, "pct_of_total_postings": 28.01},

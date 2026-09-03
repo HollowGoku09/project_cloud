@@ -22,7 +22,6 @@ def get_db_connection():
     try:
         import psycopg2
         
-        # Check for connection string URI in Streamlit secrets or env vars
         database_url = None
         if hasattr(st, "secrets"):
             database_url = st.secrets.get("DATABASE_URL") or st.secrets.get("postgres_url")
@@ -100,7 +99,6 @@ def load_top_skills(role_family=None, seniority=None):
         except Exception:
             if conn: conn.close()
             
-    # Fallback Dataset
     skills = [
         ("Python", "programming", 238420, 31.12), ("SQL", "programming", 214580, 28.01),
         ("R", "programming", 95340, 12.44), ("AWS", "cloud", 83920, 10.95),

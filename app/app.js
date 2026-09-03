@@ -1,4 +1,4 @@
-// Global Currency Definitions & Exchange Rates vs USD
+// Currency Configurations
 const CURRENCIES = {
     USD: { symbol: '$', code: 'USD', name: 'US Dollar', rate: 1.0, flag: '🇺🇸' },
     EUR: { symbol: '€', code: 'EUR', name: 'Euro', rate: 0.87, flag: '🇪🇺' },
@@ -11,7 +11,7 @@ const CURRENCIES = {
     GHS: { symbol: 'GH₵', code: 'GHS', name: 'Ghanaian Cedi', rate: 11.27, flag: '🇬🇭' }
 };
 
-// Available Custom Skills for Stack Calculator
+// Tech Stack Calculator Skills
 const AVAILABLE_STACK_SKILLS = [
     { name: 'SQL', uplift: 8000, demand: 28.0, category: 'Database' },
     { name: 'Python', uplift: 14000, demand: 31.1, category: 'Programming' },
@@ -25,7 +25,7 @@ const AVAILABLE_STACK_SKILLS = [
     { name: 'Tableau', uplift: 9000, demand: 19.1, category: 'Analytics' }
 ];
 
-// Global Dashboard State
+// Dashboard State
 const state = {
     role: 'All Roles',
     seniority: 'All Levels',
@@ -34,7 +34,7 @@ const state = {
     remote: false,
     currency: 'USD',
     activeTab: 'demand',
-    chartMetric: '%', // '%' or 'count'
+    chartMetric: '%',
     jobsPage: 1,
     jobSearch: '',
     jobSort: 'date',
@@ -72,7 +72,7 @@ function showToast(message, type = 'info') {
     }, 3000);
 }
 
-// Currency Formatter Helper
+// Currency Helpers
 function formatSalary(usdAmount, prefix = '', suffix = '') {
     if (usdAmount === null || usdAmount === undefined || isNaN(usdAmount) || usdAmount <= 0) {
         return 'Salary Undisclosed';
@@ -116,7 +116,6 @@ async function loadCountriesDropdown() {
     select.value = currentVal;
 }
 
-// Initialize state from URL on page load
 window.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('role')) state.role = params.get('role');
@@ -134,19 +133,16 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function syncUIWithState() {
-    // Role Chips
     document.querySelectorAll('#roleChipContainer button').forEach(btn => {
         const r = btn.innerText.trim();
         btn.classList.toggle('active', (r === 'All Roles' && state.role === 'All Roles') || r.includes(state.role));
     });
 
-    // Selects
     document.getElementById('senioritySelect').value = state.seniority;
     document.getElementById('countrySelect').value = state.country;
     document.getElementById('salaryMinSelect').value = state.salaryMin;
     document.getElementById('currencySelect').value = state.currency;
 
-    // Remote Btn
     const remoteBtn = document.getElementById('remoteToggleBtn');
     const remoteTxt = document.getElementById('remoteToggleText');
     if (state.remote) {
@@ -157,7 +153,6 @@ function syncUIWithState() {
         remoteTxt.innerText = 'Remote: OFF';
     }
 
-    // Breadcrumb Summary
     const currSymbol = (CURRENCIES[state.currency] || CURRENCIES.USD).symbol;
     document.getElementById('activeFilterSummary').innerHTML =
         `<i class="fa-solid fa-sliders text-blue-400"></i> Filter Scope: <b>${state.role}</b> | <b>${state.seniority}</b> | <b>${state.country}</b> ${state.salaryMin > 0 ? `| <b class="text-emerald-400">&gt;$${state.salaryMin.toLocaleString()}</b>` : ''} ${state.remote ? '| <b class="text-emerald-400">Remote Only</b>' : ''} | <b class="text-amber-400">Currency: ${state.currency} (${currSymbol})</b>`;
@@ -217,7 +212,7 @@ function switchTab(tabId) {
     if (tabId === 'employers') loadEmployers();
 }
 
-// Fetch API Helper with High-Resolution Timing
+// API Utilities
 async function fetchAPI(endpoint) {
     try {
         const res = await fetch(endpoint);
@@ -233,7 +228,7 @@ async function fetchAPI(endpoint) {
     }
 }
 
-// SYSTEM DIAGNOSTICS & TELEMETRY CONTROLLER
+// System Diagnostics
 function openDiagnosticsModal() {
     document.getElementById('diagnosticsOverlay').classList.remove('hidden');
     document.getElementById('diagnosticsModal').classList.remove('hidden');
@@ -287,7 +282,7 @@ async function runSystemDiagnosticPing() {
     }
 }
 
-// Render KPI Strip
+// KPI Rendering
 function renderKPIs(kpis) {
     if (!kpis) return;
     document.getElementById('kpiTotalJobs').innerText = (kpis.total_postings || 0).toLocaleString();
@@ -308,7 +303,7 @@ function renderKPIs(kpis) {
     document.getElementById('kpiJobShare').innerText = shareStr;
 }
 
-// Client-side fallback catalog to guarantee charts NEVER stay blank
+// Default Skill Catalog
 function getClientFallbackSkills(role) {
     const catalog = {
         'Data Engineer': [
@@ -396,18 +391,16 @@ function getClientFallbackSkills(role) {
     ];
 }
 
-// Refresh Main Dashboard (KPIs + Demand Chart)
+// Dashboard Refresh
 async function refreshDashboard() {
     const query = `role=${encodeURIComponent(state.role)}&seniority=${encodeURIComponent(state.seniority)}&country=${encodeURIComponent(state.country)}&remote=${state.remote}&salary_min=${state.salaryMin}`;
 
-    // 1. Fetch KPIs
     const kpis = await fetchAPI(`/api/kpis?${query}`);
     if (kpis) {
         state.rawKpis = kpis;
         renderKPIs(kpis);
     }
 
-    // 2. Fetch Top Skills Matrix with client-side fallback assurance
     let skills = await fetchAPI(`/api/skills/matrix?${query}&limit=15`);
     if (!skills || !Array.isArray(skills) || skills.length === 0) {
         skills = getClientFallbackSkills(state.role);
@@ -417,14 +410,12 @@ async function refreshDashboard() {
     renderCategoryChart(skills);
     renderSkillsTable(skills);
 
-    // 3. Refresh Active Module Tab
     if (state.activeTab === 'roi') loadRoiMatrix();
     if (state.activeTab === 'jobs') loadJobsFeed();
     if (state.activeTab === 'career') runGapAnalysis();
     if (state.activeTab === 'employers') loadEmployers();
 }
 
-// Toggle Chart Metric (% vs Count)
 function setChartMetric(m) {
     state.chartMetric = m;
     document.getElementById('togglePctBtn').className = m === '%' ? 'px-3 py-1 rounded-lg bg-blue-600 text-white' : 'px-3 py-1 rounded-lg text-slate-400 hover:text-white';
@@ -432,7 +423,7 @@ function setChartMetric(m) {
     refreshDashboard();
 }
 
-// Render Chart.js Horizontal Bar Chart (Tableau Blue #1F77B4)
+// Demand Chart
 function renderDemandChart(skills) {
     const canvas = document.getElementById('demandChart');
     if (!canvas) return;
@@ -477,7 +468,7 @@ function renderDemandChart(skills) {
     });
 }
 
-// Render Skill Category Doughnut Chart (Tableau 10 Categorical Colors)
+// Category Chart
 function renderCategoryChart(skills) {
     const canvas = document.getElementById('categoryChart');
     if (!canvas) return;
@@ -516,7 +507,6 @@ function renderCategoryChart(skills) {
         }
     });
 
-    // Custom Legend
     const legendContainer = document.getElementById('categoryLegendContainer');
     if (legendContainer) {
         const totalSum = dataVals.reduce((a, b) => a + b, 0);
@@ -571,7 +561,7 @@ function filterBySkill(skillName) {
     showToast(`Filtering jobs by skill: ${skillName}`, 'info');
 }
 
-// CUSTOM TECH STACK BUILDER CALCULATOR
+// Tech Stack Calculator
 function renderCustomStackPills() {
     const container = document.getElementById('customStackPillContainer');
     if (!container) return;
@@ -623,7 +613,7 @@ function renderCustomStackCalculator() {
     document.getElementById('customStackUpliftText').innerText = `${formatSalary(totalUplift, '+')}/yr Uplift`;
 }
 
-// Load ROI Matrix
+// ROI Matrix
 async function loadRoiMatrix() {
     const data = await fetchAPI('/api/skills/roi-combo');
     if (!data) return;
@@ -663,7 +653,7 @@ function renderRoiMatrixData(data) {
     `).join('');
 }
 
-// Load Jobs Explorer
+// Jobs Explorer
 async function loadJobsFeed() {
     state.jobSort = document.getElementById('jobSortSelect').value;
     const query = `role=${encodeURIComponent(state.role)}&seniority=${encodeURIComponent(state.seniority)}&country=${encodeURIComponent(state.country)}&remote=${state.remote}&salary_min=${state.salaryMin}&search=${encodeURIComponent(state.jobSearch)}&page=${state.jobsPage}&limit=10&sort_by=${state.jobSort}`;
@@ -710,7 +700,7 @@ function changeJobPage(delta) {
     loadJobsFeed();
 }
 
-// Job Drawer Slide-over
+// Job Details Drawer
 function openJobDrawer(j) {
     document.getElementById('drawerTitle').innerText = j.title;
     document.getElementById('drawerCompany').innerText = j.company;
@@ -738,7 +728,7 @@ function closeJobDrawer() {
     drawer.classList.add('drawer-closed');
 }
 
-// Career Skill Gap Analyzer & Competency Radar Chart
+// Career Skill Gap Analyzer
 async function runGapAnalysis() {
     const role = document.getElementById('analyzerRoleSelect').value;
     const checkedSkills = Array.from(document.querySelectorAll('#analyzerSkillCheckboxes input:checked')).map(i => i.value);
@@ -828,7 +818,7 @@ function renderCompetencyRadarChart(targetRole, checkedSkills) {
     });
 }
 
-// Top Employers
+// Top Employers Leaderboard
 async function loadEmployers() {
     const query = `role=${encodeURIComponent(state.role)}&seniority=${encodeURIComponent(state.seniority)}&country=${encodeURIComponent(state.country)}&remote=${state.remote}`;
     const data = await fetchAPI(`/api/employers/top?${query}`);
@@ -898,7 +888,7 @@ function renderEmployersChart(data) {
     });
 }
 
-// CURRENCY CONVERTER MODAL CONTROLLER
+// Currency Converter Modal
 function openCurrencyConverterModal() {
     const initialVal = (state.rawKpis && state.rawKpis.median_salary) ? state.rawKpis.median_salary : 115000;
     document.getElementById('converterAmountInput').value = initialVal;
@@ -945,7 +935,7 @@ function updateCurrencyConverterModal() {
     }).join('');
 }
 
-// COMMAND PALETTE MODAL (Ctrl + K)
+// Command Palette (Ctrl+K)
 function openCommandPalette() {
     document.getElementById('commandPaletteOverlay').classList.remove('hidden');
     document.getElementById('commandPaletteModal').classList.remove('hidden');
@@ -981,7 +971,7 @@ function executeCommand(cmd) {
     }
 }
 
-// EXPORT FUNCTIONS
+// Data Export Handlers
 function exportCurrentViewCSV() {
     if (state.activeTab === 'jobs') exportJobsCSV();
     else if (state.activeTab === 'employers') exportEmployersCSV();
@@ -1054,7 +1044,7 @@ function copyShareableLink() {
     });
 }
 
-// ONBOARDING TOUR LOGIC
+// Onboarding Tour
 const onboardingSteps = [
     {
         title: "Welcome to Tech Job Market Analytics",
@@ -1185,7 +1175,6 @@ function prevOnboardingStep() {
     }
 }
 
-// Auto show onboarding tour on first visit & sync direct deep-links
 window.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const initialTab = urlParams.get('tab');
@@ -1194,12 +1183,11 @@ window.addEventListener('DOMContentLoaded', () => {
         switchTab(initialTab);
     }
 
-    if (!localStorage.getItem('hasSeenOnboarding')) {
-        setTimeout(startOnboardingTour, 800);
-    }
+    // Trigger onboarding tour on page load
+    setTimeout(startOnboardingTour, 600);
 });
 
-// Global Keyboard Shortcuts (Ctrl + K, Escape)
+// Global Keyboard Shortcuts
 window.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();

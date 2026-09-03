@@ -8,20 +8,20 @@
     <meta name="description"
         content="Portfolio-grade tech job market analytics dashboard powered by PostgreSQL materialized views and 767,000+ job postings.">
 
-    <!-- Premium Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Chart.js CDN -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- FontAwesome 6 Icons -->
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script>
@@ -72,7 +72,6 @@
             overflow-x: hidden;
         }
 
-        /* Subtle Matte Background */
         .ambient-mesh {
             position: fixed;
             top: 0;
@@ -86,7 +85,6 @@
                 radial-gradient(circle at 85% 85%, rgba(255, 127, 14, 0.05) 0%, transparent 40%);
         }
 
-        /* Professional Enterprise BI Cards */
         .glass-card {
             background: #1E293B;
             border: 1px solid #334155;
@@ -100,7 +98,6 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
         }
 
-        /* Interactive Role Chips */
         .role-chip {
             transition: all 0.15s ease;
         }
@@ -113,7 +110,6 @@
             box-shadow: 0 2px 8px rgba(31, 119, 180, 0.35);
         }
 
-        /* Navigation Tab Buttons */
         .tab-btn {
             position: relative;
             transition: all 0.2s ease;
@@ -137,7 +133,6 @@
             border-radius: 999px;
         }
 
-        /* Tableau 10 Categorical Badge Styles */
         .badge-prog {
             background: rgba(31, 119, 180, 0.15);
             color: #4A9EE0;
@@ -168,7 +163,6 @@
             border: 1px solid rgba(23, 190, 207, 0.4);
         }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 7px;
             height: 7px;
@@ -187,7 +181,6 @@
             background: #3B82F6;
         }
 
-        /* Keyframes */
         @keyframes pulseGlow {
 
             0%,
@@ -206,7 +199,6 @@
             animation: pulseGlow 3s infinite ease-in-out;
         }
 
-        /* Slide Drawer */
         .drawer {
             transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -219,7 +211,7 @@
             transform: translateX(0);
         }
 
-        /* Print Optimization */
+        /* Print Styles */
         @media print {
             body {
                 background: #ffffff !important;
@@ -257,10 +249,9 @@
 
 <body class="min-h-screen p-3 md:p-6 selection:bg-blue-600 selection:text-white relative">
 
-    <!-- Ambient Mesh Background -->
     <div class="ambient-mesh"></div>
 
-    <!-- TOP NAVIGATION HEADER & BRAND BAR -->
+    <!-- Header -->
     <header
         class="mb-5 flex flex-col lg:flex-row justify-between items-start lg:items-center border-b border-slate-800/80 pb-4 gap-3 no-print">
         <div class="flex items-center space-x-3.5">
@@ -284,9 +275,7 @@
             </div>
         </div>
 
-        <!-- Header Controls & Indicators -->
         <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto justify-start lg:justify-end">
-            <!-- Connectivity Pill -->
             <div
                 class="bg-emerald-950/40 border border-emerald-500/30 rounded-xl px-3.5 py-1.5 text-right flex items-center space-x-2.5 shadow-sm">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -297,23 +286,19 @@
                 </div>
             </div>
 
-            <!-- Quick Toolbar Buttons -->
             <div class="flex items-center space-x-1.5 ml-auto lg:ml-0">
-                <!-- System Diagnostics Button -->
                 <button onclick="openDiagnosticsModal()" title="System Diagnostics & Engine Telemetry"
                     class="bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-all">
                     <i class="fa-solid fa-gauge-high text-amber-400"></i>
                     <span class="hidden md:inline">Diagnostics</span>
                 </button>
 
-                <!-- Interactive Tour Button -->
                 <button onclick="startOnboardingTour()" title="Interactive Onboarding Tour & Feature Guide"
                     class="bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-blue-300 hover:text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all shadow-lg shadow-blue-500/10">
                     <i class="fa-solid fa-compass text-blue-400"></i>
                     <span class="hidden sm:inline">Tour</span>
                 </button>
 
-                <!-- Command Palette Shortcut Button -->
                 <button onclick="openCommandPalette()" title="Command Palette (Ctrl + K)"
                     class="bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-all">
                     <i class="fa-solid fa-terminal text-blue-400"></i>
@@ -322,21 +307,18 @@
                         class="hidden md:inline bg-slate-800 text-slate-400 text-[10px] px-1.5 py-0.5 rounded font-mono border border-slate-700">Ctrl+K</kbd>
                 </button>
 
-                <!-- Share Link Button -->
                 <button onclick="copyShareableLink()" title="Share Workspace Filter Link"
                     class="bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-all">
                     <i class="fa-solid fa-share-nodes text-indigo-400"></i>
                     <span class="hidden sm:inline">Share</span>
                 </button>
 
-                <!-- Export Executive Report (Print / PDF) -->
                 <button onclick="printExecutiveReport()" title="Export Executive PDF / Print Report"
                     class="bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-all">
                     <i class="fa-solid fa-file-pdf text-rose-400"></i>
                     <span class="hidden sm:inline">Export PDF</span>
                 </button>
 
-                <!-- Export CSV Dropdown -->
                 <button onclick="exportCurrentViewCSV()" title="Export Current View Data to CSV"
                     class="bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-all">
                     <i class="fa-solid fa-download text-emerald-400"></i>
@@ -346,12 +328,10 @@
         </div>
     </header>
 
-    <!-- GLOBAL STICKY FILTER BAR -->
-    <!-- DYNAMIC DASHBOARD FILTER & SLICER BAR (2-TIER EXECUTIVE DESIGN) -->
+    <!-- Filter Bar -->
     <section
         class="sticky top-2 z-30 mb-6 bg-slate-900/95 backdrop-blur-xl border border-slate-800/90 rounded-2xl p-3.5 md:p-4 shadow-2xl no-print space-y-3">
         
-        <!-- TIER 1: Primary Role Slicers -->
         <div class="flex flex-col sm:flex-row sm:items-center gap-2">
             <div class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-400 shrink-0">
                 <i class="fa-solid fa-layer-group text-blue-400"></i>
@@ -385,11 +365,8 @@
             </div>
         </div>
 
-        <!-- TIER 2: Granular Filters & Tools Toolbar -->
         <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-2.5 pt-2.5 border-t border-slate-800/80 text-xs">
-            <!-- Left Group: Criteria Filters -->
             <div class="flex flex-wrap items-center gap-2">
-                <!-- Seniority Dropdown -->
                 <div class="relative">
                     <select id="senioritySelect" onchange="setFilter('seniority', this.value)"
                         class="bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-200 rounded-xl px-3 py-1.5 focus:border-blue-500 focus:outline-none cursor-pointer transition">
@@ -399,7 +376,6 @@
                     </select>
                 </div>
 
-                <!-- Country Dropdown -->
                 <div class="relative">
                     <select id="countrySelect" onchange="setFilter('country', this.value)"
                         class="bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-200 rounded-xl px-3 py-1.5 focus:border-blue-500 focus:outline-none cursor-pointer transition">
@@ -414,7 +390,6 @@
                     </select>
                 </div>
 
-                <!-- Salary Preset Slicer -->
                 <div class="relative">
                     <select id="salaryMinSelect" onchange="setFilter('salaryMin', this.value)"
                         class="bg-slate-950 border border-slate-800 hover:border-slate-700 text-emerald-400 font-semibold rounded-xl px-3 py-1.5 focus:border-emerald-500 focus:outline-none cursor-pointer transition">
@@ -425,7 +400,6 @@
                     </select>
                 </div>
 
-                <!-- Remote Toggle Button -->
                 <button id="remoteToggleBtn" onclick="toggleRemoteFilter()"
                     class="bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-400 rounded-xl px-3 py-1.5 flex items-center space-x-1.5 transition">
                     <i class="fa-solid fa-house-laptop text-emerald-400"></i>
@@ -433,9 +407,7 @@
                 </button>
             </div>
 
-            <!-- Right Group: Currency & Actions -->
             <div class="flex flex-wrap items-center gap-2">
-                <!-- Currency Selector Dropdown -->
                 <div
                     class="flex items-center space-x-1.5 bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 rounded-xl px-2.5 py-1.5 shadow-sm hover:border-emerald-500/50 transition">
                     <i class="fa-solid fa-coins text-amber-400 text-xs"></i>
@@ -453,14 +425,12 @@
                     </select>
                 </div>
 
-                <!-- Currency Converter Button -->
                 <button onclick="openCurrencyConverterModal()"
                     class="bg-emerald-950/40 hover:bg-emerald-900/50 text-emerald-300 border border-emerald-500/30 rounded-xl px-3 py-1.5 flex items-center space-x-1.5 font-bold shadow-sm transition">
                     <i class="fa-solid fa-calculator text-amber-400"></i>
                     <span>Converter</span>
                 </button>
 
-                <!-- Reset Filters Button -->
                 <button onclick="resetAllFilters()"
                     class="bg-slate-800/60 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/60 rounded-xl px-3 py-1.5 flex items-center space-x-1 transition">
                     <i class="fa-solid fa-rotate-left text-slate-400"></i>
@@ -469,15 +439,13 @@
             </div>
         </div>
 
-        <!-- Filter Active Breadcrumb Summary -->
         <div class="pt-2 border-t border-slate-800/60 text-[11px] text-slate-400">
             <span id="activeFilterSummary"><i class="fa-solid fa-sliders text-blue-400"></i> Active Filter: <b>All Roles</b> | <b>All Levels</b> | <b>Global Scope</b></span>
         </div>
     </section>
 
-    <!-- EXECUTIVE OVERVIEW KPI STRIP -->
+    <!-- KPI Summary Strip -->
     <section class="grid grid-cols-2 lg:grid-cols-4 gap-3.5 md:gap-4 mb-6">
-        <!-- KPI 1: Open Positions -->
         <div class="glass-card p-4">
             <div class="flex justify-between items-start">
                 <span class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Filtered Job Volume</span>
@@ -493,7 +461,6 @@
             </div>
         </div>
 
-        <!-- KPI 2: Global Median Salary -->
         <div class="glass-card p-4">
             <div class="flex justify-between items-start">
                 <span class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Median Annual Salary</span>
@@ -507,7 +474,6 @@
             </div>
         </div>
 
-        <!-- KPI 3: #1 Requested Technology -->
         <div class="glass-card p-4">
             <div class="flex justify-between items-start">
                 <span class="text-slate-400 text-xs font-semibold uppercase tracking-wider">#1 Tech Requirement</span>
@@ -521,7 +487,6 @@
             </div>
         </div>
 
-        <!-- KPI 4: Highest-Paying Stack Combo -->
         <div class="glass-card p-4">
             <div class="flex justify-between items-start">
                 <span class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Top Tech Combo ROI</span>
@@ -537,7 +502,7 @@
         </div>
     </section>
 
-    <!-- MODULE NAVIGATION TAB STRIP -->
+    <!-- Module Navigation -->
     <nav
         class="border-b border-slate-800/90 mb-6 flex overflow-x-auto space-x-1.5 text-sm font-semibold scrollbar-none no-print">
         <button onclick="switchTab('demand')" id="tab-demand"
@@ -562,11 +527,10 @@
         </button>
     </nav>
 
-    <!-- MODULE 1 TAB: SKILL DEMAND & CATEGORY MATRIX -->
+    <!-- Module 1: Skill Demand & Category Matrix -->
     <div id="content-demand" class="tab-content">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
 
-            <!-- Chart A: Horizontal Ranked Bar Chart -->
             <div class="glass-card p-5 lg:col-span-2">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
                     <div>
@@ -575,7 +539,6 @@
                         </h3>
                         <p class="text-xs text-slate-400">Aggregated market demand across filtered job postings</p>
                     </div>
-                    <!-- Chart Toggle: % vs Count -->
                     <div class="bg-slate-950 p-1 rounded-xl border border-slate-800 flex text-xs font-bold">
                         <button id="togglePctBtn" onclick="setChartMetric('%')"
                             class="px-3 py-1 rounded-lg bg-blue-600 text-white">Percentage (%)</button>
@@ -589,7 +552,6 @@
                 </div>
             </div>
 
-            <!-- Chart B: Category Breakdown Doughnut Chart -->
             <div class="glass-card p-5">
                 <h3 class="text-lg font-bold text-white mb-1 flex items-center gap-2">
                     <i class="fa-solid fa-chart-pie text-purple-400"></i> Category Distribution
@@ -607,7 +569,6 @@
 
         </div>
 
-        <!-- Leaderboard Data Table -->
         <div class="glass-card p-5">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
                 <h3 class="text-lg font-bold text-white flex items-center gap-2">
@@ -634,9 +595,8 @@
         </div>
     </div>
 
-    <!-- MODULE 2 TAB: SKILL COMBO ROI MATRIX & STACK CALCULATOR -->
+    <!-- Module 2: Skill Combo ROI Matrix -->
     <div id="content-roi" class="tab-content hidden">
-        <!-- Banner Header -->
         <div
             class="bg-gradient-to-r from-purple-950/60 via-blue-950/40 to-slate-900 border border-purple-500/30 rounded-2xl p-5 mb-6 shadow-xl">
             <div class="flex items-start space-x-3.5">
@@ -650,12 +610,10 @@
             </div>
         </div>
 
-        <!-- Pre-configured ROI Comparison Cards Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6" id="roiCardsContainer">
             <!-- Populated via JS -->
         </div>
 
-        <!-- INTERACTIVE CUSTOM TECH STACK BUILDER & CALCULATOR -->
         <div class="glass-card p-5 mb-6 border-purple-500/30">
             <div
                 class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4 pb-3 border-b border-slate-800 gap-3">
@@ -679,13 +637,11 @@
                 </div>
             </div>
 
-            <!-- Checkable Multi-select Pills -->
             <div class="flex flex-wrap gap-2 text-xs mb-4" id="customStackPillContainer">
                 <!-- JS Populated -->
             </div>
         </div>
 
-        <!-- Detailed ROI Breakdown Data Table -->
         <div class="glass-card p-5">
             <div class="flex justify-between items-center mb-4">
                 <h4 class="text-base font-bold text-white flex items-center gap-2">
@@ -717,9 +673,8 @@
         </div>
     </div>
 
-    <!-- MODULE 3 TAB: JOB EXPLORER & MARKET FEED -->
+    <!-- Module 3: Job Explorer & Market Feed -->
     <div id="content-jobs" class="tab-content hidden">
-        <!-- Controls Header -->
         <div class="glass-card p-4 mb-6 flex flex-col md:flex-row items-center justify-between gap-3">
             <div class="relative w-full md:w-96">
                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
@@ -745,7 +700,6 @@
             </div>
         </div>
 
-        <!-- Data Grid Table -->
         <div class="glass-card overflow-hidden mb-4">
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs">
@@ -767,7 +721,6 @@
             </div>
         </div>
 
-        <!-- Pagination Controls -->
         <div class="flex items-center justify-between text-xs text-slate-400 px-2">
             <span id="jobsPageSummary">Showing Page 1 of 1</span>
             <div class="flex items-center space-x-2">
@@ -779,18 +732,16 @@
         </div>
     </div>
 
-    <!-- MODULE 4 TAB: CAREER SKILL GAP ANALYZER & RADAR CHART -->
+    <!-- Module 4: Career Skill Gap Analyzer -->
     <div id="content-career" class="tab-content hidden">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
 
-            <!-- Skill Selector Form -->
             <div class="glass-card p-5">
                 <h3 class="text-lg font-bold text-white mb-1 flex items-center gap-2">
                     <i class="fa-solid fa-user-gear text-rose-400"></i> Career Profile & Target
                 </h3>
                 <p class="text-xs text-slate-400 mb-4">Input your stack to evaluate role readiness score</p>
 
-                <!-- Target Role Select -->
                 <div class="mb-4">
                     <label class="text-xs text-slate-300 font-bold uppercase block mb-1.5">Target Role:</label>
                     <select id="analyzerRoleSelect" onchange="runGapAnalysis()"
@@ -802,7 +753,6 @@
                     </select>
                 </div>
 
-                <!-- Current Skill Checkboxes -->
                 <div class="mb-4">
                     <label class="text-xs text-slate-300 font-bold uppercase block mb-2">Check Your Current
                         Skills:</label>
@@ -847,7 +797,6 @@
                 </div>
             </div>
 
-            <!-- Analysis Output Dashboard -->
             <div class="glass-card p-5 lg:col-span-2">
                 <div
                     class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 pb-4 border-b border-slate-800 gap-4">
@@ -868,7 +817,6 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Acquired Skills -->
                     <div>
                         <h4
                             class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
@@ -879,7 +827,6 @@
                         </div>
                     </div>
 
-                    <!-- Missing Skills Prioritized -->
                     <div>
                         <h4
                             class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
@@ -894,7 +841,6 @@
 
         </div>
 
-        <!-- COMPETENCY RADAR CHART CONTAINER -->
         <div class="glass-card p-5">
             <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
                 <i class="fa-solid fa-compass text-rose-400"></i> Competency Radar Matrix
@@ -907,9 +853,8 @@
         </div>
     </div>
 
-    <!-- MODULE 5 TAB: TOP EMPLOYERS & COMPENSATION LEADERBOARD -->
+    <!-- Module 5: Top Employers & Compensation Leaderboard -->
     <div id="content-employers" class="tab-content hidden">
-        <!-- Top Employers Bar Chart -->
         <div class="glass-card p-5 mb-6">
             <div class="flex justify-between items-center mb-4">
                 <div>
@@ -930,7 +875,6 @@
             </div>
         </div>
 
-        <!-- Leaderboard Table -->
         <div class="glass-card p-5">
             <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
                 <i class="fa-solid fa-list text-cyan-400"></i> Top Employer Leaderboard
@@ -953,7 +897,7 @@
         </div>
     </div>
 
-    <!-- SLIDE-OVER QUICK VIEW JOB DRAWER -->
+    <!-- Job Details Drawer -->
     <div id="jobDrawerOverlay" onclick="closeJobDrawer()"
         class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 hidden no-print"></div>
     <div id="jobDrawer"
@@ -1015,7 +959,7 @@
         </div>
     </div>
 
-    <!-- LIVE CURRENCY CONVERTER MODAL -->
+    <!-- Currency Converter Modal -->
     <div id="currencyModalOverlay" onclick="closeCurrencyConverterModal()"
         class="fixed inset-0 bg-black/75 backdrop-blur-md z-50 hidden transition-opacity no-print"></div>
     <div id="currencyModal"
@@ -1034,9 +978,7 @@
         </div>
 
         <div class="mt-5 space-y-5">
-            <!-- Inputs Row -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <!-- Salary Input -->
                 <div class="sm:col-span-2">
                     <label class="text-xs font-bold text-slate-300 uppercase tracking-wider block mb-1.5">Salary Amount
                         (in USD):</label>
@@ -1048,7 +990,6 @@
                     </div>
                 </div>
 
-                <!-- Pay Period -->
                 <div>
                     <label class="text-xs font-bold text-slate-300 uppercase tracking-wider block mb-1.5">Pay
                         Period:</label>
@@ -1061,7 +1002,6 @@
                 </div>
             </div>
 
-            <!-- Currency Conversion Grid Output -->
             <div>
                 <h4
                     class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center justify-between">
@@ -1083,7 +1023,7 @@
         </div>
     </div>
 
-    <!-- COMMAND PALETTE MODAL (Ctrl + K) -->
+    <!-- Command Palette Modal -->
     <div id="commandPaletteOverlay" onclick="closeCommandPalette()"
         class="fixed inset-0 bg-black/75 backdrop-blur-md z-50 hidden no-print"></div>
     <div id="commandPaletteModal"
@@ -1144,7 +1084,7 @@
         </div>
     </div>
 
-    <!-- SYSTEM DIAGNOSTICS & TELEMETRY MODAL -->
+    <!-- System Diagnostics Modal -->
     <div id="diagnosticsOverlay" onclick="closeDiagnosticsModal()"
         class="fixed inset-0 bg-black/75 backdrop-blur-md z-50 hidden no-print"></div>
     <div id="diagnosticsModal"
@@ -1165,7 +1105,6 @@
             </button>
         </div>
 
-        <!-- Telemetry Grid -->
         <div class="grid grid-cols-2 gap-3 mb-5 text-xs">
             <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
                 <div class="flex justify-between items-center mb-1">
@@ -1188,7 +1127,6 @@
             </div>
         </div>
 
-        <!-- Technical Architecture Info -->
         <div class="p-3 bg-blue-950/40 border border-blue-500/30 rounded-xl text-[11px] text-slate-300 space-y-1 mb-5">
             <div class="font-bold text-blue-300 flex items-center gap-1.5">
                 <i class="fa-solid fa-microchip"></i> Engine Architecture
@@ -1196,7 +1134,6 @@
             <div>Neon Serverless PostgreSQL • 12 Active Materialized Views • In-Memory Cache • Sub-Second Analytics</div>
         </div>
 
-        <!-- Footer Action -->
         <div class="flex justify-between items-center pt-3 border-t border-slate-800">
             <span id="diagTimestamp" class="text-[10px] text-slate-500 font-mono">Ready</span>
             <div class="flex space-x-2">
@@ -1213,14 +1150,13 @@
         </div>
     </div>
 
-    <!-- TOAST NOTIFICATION CONTAINER -->
+    <!-- Toast Notifications -->
     <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none no-print"></div>
 
-    <!-- MAIN JAVASCRIPT ENGINE & STATE CONTROLLER -->
     <script src="app.js"></script>
 
-    <!-- ONBOARDING TOUR MODAL -->
-    <div id="onboardingOverlay"
+    <!-- Onboarding Tour Modal -->
+    <div id="onboardingOverlay" onclick="closeOnboardingTour()"
         class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 transition-opacity duration-300"></div>
     <div id="onboardingModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
         <div

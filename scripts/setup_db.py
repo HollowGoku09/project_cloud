@@ -10,13 +10,11 @@ import sys
 import psycopg2
 from dotenv import load_dotenv
 
-# Ensure parent directory is on sys.path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.config import get_db_connection_kwargs, DB_HOST, DB_PORT, DB_NAME, DB_USER, DATABASE_URL
 
 def init_database():
     target = DATABASE_URL if DATABASE_URL else f"{DB_HOST}:{DB_PORT}/{DB_NAME}"
-    # Mask password if printing URI
     masked_target = target
     if "@" in masked_target and "://" in masked_target:
         prefix, rest = masked_target.split("://", 1)
@@ -33,7 +31,6 @@ def init_database():
         print("[OK] Connected to target database successfully.")
     except psycopg2.OperationalError as e:
         err_msg = str(e)
-        # If running locally and database doesn't exist, try creating it via 'postgres' db
         if not DATABASE_URL and ("database" in err_msg and "does not exist" in err_msg):
             print(f"Database '{DB_NAME}' does not exist. Attempting to create it on local server...")
             try:
@@ -78,7 +75,6 @@ def init_database():
             print(f"  -> [OK] {filename} applied successfully.")
         except Exception as e:
             print(f"  -> [WARNING/ERROR] in {filename}: {e}")
-            # If 00_drop_all or 03_materialized_views fails on empty tables, continue
             if "00_drop_all" in filename or "03_materialized_views" in filename:
                 continue
             else:

@@ -44,14 +44,13 @@ def get_db_connection_kwargs() -> dict:
 # Feature Flags & Processing Settings
 EXCLUDE_SUDAN = os.getenv("EXCLUDE_SUDAN", "True").lower() in ("true", "1", "yes")
 CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", 100000))
-MAX_BRIDGE_ROWS = int(os.getenv("MAX_BRIDGE_ROWS", 1800000))  # Capped to 1.8M bridge records to comfortably fit within Neon 512MB free tier
-
+MAX_BRIDGE_ROWS = int(os.getenv("MAX_BRIDGE_ROWS", 1800000))
 
 # -----------------------------------------------------------------------------
 # Business Mapping Rules
 # -----------------------------------------------------------------------------
 
-# Canonical skill mappings: variant (lowercase, trimmed) -> canonical skill name
+# Canonical skill mappings: variant -> canonical name
 CANONICAL_SKILL_MAP = {
     "powerbi": "power bi",
     "msaccess": "ms access",
@@ -80,14 +79,14 @@ CANONICAL_SKILL_MAP = {
     "gcp": "google cloud platform"
 }
 
-# Multi-type skill resolutions (skills appearing under multiple type categories)
+# Multi-type skill resolutions
 MULTI_TYPE_RESOLUTIONS = {
     "sas": "analyst_tools",
     "ruby": "programming",
     "firebase": "databases"
 }
 
-# Role Family Mapping: job_title_short -> role_family_name
+# Role Family Mapping
 ROLE_FAMILY_MAP = {
     "Data Analyst": "Data & Analytics",
     "Senior Data Analyst": "Data & Analytics",

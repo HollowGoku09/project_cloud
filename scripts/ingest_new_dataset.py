@@ -13,7 +13,6 @@ import psycopg2
 from psycopg2.extras import execute_batch
 from dotenv import load_dotenv
 
-# Ensure parent directory is on sys.path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.config import get_db_connection_kwargs
 
@@ -91,7 +90,6 @@ def run_ingestion():
     conn = get_db_conn()
     cur = conn.cursor()
 
-    # 1. Ensure Role Families
     logger.info("Ensuring role_family_dim entries...")
     families = [
         ('AI/ML', 'Roles focused on machine learning models, statistical inference, and AI systems.'),
@@ -116,7 +114,6 @@ def run_ingestion():
             rf_map[fname] = cur.fetchone()[0]
     conn.commit()
 
-    # 2. Existing Max IDs
     cur.execute("SELECT COALESCE(MAX(job_id), 2000000) FROM job_postings_fact;")
     max_job_id = max(cur.fetchone()[0], 2000000)
 
@@ -126,11 +123,9 @@ def run_ingestion():
     cur.execute("SELECT COALESCE(MAX(company_id), 800000) FROM company_dim;")
     max_company_id = max(cur.fetchone()[0], 800000)
 
-    # 3. Existing Skills Map
     cur.execute("SELECT LOWER(skills), skill_id FROM skills_dim;")
     skills_map = {row[0]: row[1] for row in cur.fetchall()}
 
-    # 4. Process Skills
     new_skills_to_insert = []
     for item in dataset:
         sk_list = item.get('Skills', item.get('skills', []))
@@ -151,8 +146,6 @@ def run_ingestion():
         execute_batch(cur, "INSERT INTO skills_dim (skill_id, skills, type, canonical_skill_id, is_canonical) VALUES (%s, %s, %s, %s, %s) ON CONFLICT DO NOTHING;", new_skills_to_insert)
         conn.commit()
 
-    # 5. Process Company, Location, Platform, and Schedule dimensions
-    # Location
     cur.execute("SELECT location_id FROM location_dim WHERE country = 'United States' LIMIT 1;")
     loc_res = cur.fetchone()
     if loc_res:
@@ -162,7 +155,6 @@ def run_ingestion():
         default_loc_id = cur.fetchone()[0]
     conn.commit()
 
-    # Platform
     cur.execute("SELECT platform_id FROM platform_dim LIMIT 1;")
     plat_res = cur.fetchone()
     if plat_res:
@@ -172,7 +164,6 @@ def run_ingestion():
         default_plat_id = cur.fetchone()[0]
     conn.commit()
 
-    # Schedule
     cur.execute("SELECT schedule_id FROM schedule_dim LIMIT 1;")
     sched_res = cur.fetchone()
     if sched_res:
@@ -192,7 +183,6 @@ def run_ingestion():
     execute_batch(cur, "INSERT INTO company_dim (company_id, name, link, link_google, thumbnail) VALUES (%s, %s, %s, %s, %s) ON CONFLICT (company_id) DO NOTHING;", company_records)
     conn.commit()
 
-    # 6. Ingest Job Postings & Skills Bridge
     jobs_to_insert = []
     skills_bridge_to_insert = set()
 
@@ -209,7 +199,6 @@ def run_ingestion():
         
         comp_id = 800001 + (idx % 5)
         
-        # Base role category
         title_short = title
         if len(title_short) > 50:
             title_short = title[:47] + '...'
@@ -225,16 +214,15 @@ def run_ingestion():
             title_short,
             fname,
             sen,
-            False, # remote
-            True,  # no degree
-            True,  # health ins
+            False,
+            True,
+            True,
             '2024-01-15 00:00:00+00',
             'year',
             sal,
             None
         ))
 
-        # Skills bridge
         sk_list = item.get('Skills', item.get('skills', []))
         if isinstance(sk_list, str):
             sk_list = [s.strip() for s in sk_list.split(';')]
@@ -262,7 +250,6 @@ def run_ingestion():
     execute_batch(cur, "INSERT INTO skills_job_dim (job_id, skill_id) VALUES (%s, %s) ON CONFLICT DO NOTHING;", list(skills_bridge_to_insert))
     conn.commit()
 
-    # 7. Refresh Materialized Views
     logger.info("Refreshing all Materialized Views...")
     mvs = [
         'mv_top_skills_overall', 'mv_top_skills_by_role_family', 'mv_top_skills_by_category',
@@ -281,7 +268,7 @@ def run_ingestion():
 
     cur.close()
     conn.close()
-    logger.info(f"🎉 Ingestion Complete! Merged {len(jobs_to_insert)} new postings into Neon database!")
+    logger.info(f"Ingestion complete: Merged {len(jobs_to_insert)} postings.")
 
 if __name__ == "__main__":
     run_ingestion()

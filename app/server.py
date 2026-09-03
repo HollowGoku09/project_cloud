@@ -134,7 +134,7 @@ class WebBIHandler(BaseHTTPRequestHandler):
         path = parsed.path
         params = parse_qs(parsed.query)
 
-        # Serve static frontend application & assets
+        # Static assets
         if path == "/" or path == "/index.html":
             file_path = os.path.join(os.path.dirname(__file__), "index.html")
             if os.path.exists(file_path):
@@ -160,7 +160,6 @@ class WebBIHandler(BaseHTTPRequestHandler):
                 self.wfile.write(b"404 Not Found")
                 return
 
-        # Parse common query parameters
         role = params.get('role', params.get('role_title', [None]))[0]
         seniority = params.get('seniority', [None])[0]
         country = params.get('country', [None])[0]
@@ -327,7 +326,6 @@ class WebBIHandler(BaseHTTPRequestHandler):
                 p25 = float(row[4]) if row and row[4] else 85000.0
                 p75 = float(row[5]) if row and row[5] else 145000.0
 
-                # Query top skill specifically for this filter scope
                 top_skill_q = f"""
                 SELECT s.skills, COUNT(DISTINCT j.job_id) AS cnt
                 FROM job_postings_fact j
@@ -348,7 +346,6 @@ class WebBIHandler(BaseHTTPRequestHandler):
                     top_skill_name = "Python" if not role or "Scientist" in str(role) or "Engineer" in str(role) else "SQL"
                     top_skill_pct = 31.12
 
-                # Dynamic combo tailored to domain
                 r_str = str(role or "")
                 if any(k in r_str.lower() for k in ["hacker", "security", "cyber"]):
                     combo_name = f"{top_skill_name} + Kali Linux + Vulnerability Assessment"
@@ -400,7 +397,6 @@ class WebBIHandler(BaseHTTPRequestHandler):
         except Exception as e:
             logger.error(f"KPI error: {e}")
 
-        # High-density Fallback calculation based on role
         fallback_role_map = {
             'Data Analyst': {'jobs': 223714, 'median': 92000, 'skill': 'SQL', 'pct': 54.2, 'combo': 'SQL + Tableau + Power BI', 'uplift': '+$18,500'},
             'Data Engineer': {'jobs': 223623, 'median': 135000, 'skill': 'Python', 'pct': 68.4, 'combo': 'Python + AWS + Spark', 'uplift': '+$32,400'},
@@ -469,7 +465,6 @@ class WebBIHandler(BaseHTTPRequestHandler):
             conn = get_db_conn()
             if conn:
                 cur = conn.cursor()
-                # 1. Targeted query for niche/supplemental roles (fast < 500ms on small row sets)
                 if role in ['Ethical Hacker', 'AI Prompt Engineer', 'Blockchain Developer', 'Game Developer', 'Big Data Specialist']:
                     q = f"""
                     WITH role_scope AS (
@@ -560,7 +555,6 @@ class WebBIHandler(BaseHTTPRequestHandler):
         except Exception as e:
             logger.error(f"Skills matrix error: {e}")
 
-        # Master Skill catalog fallback by role
         role_skills_fallback = {
             'Ethical Hacker': [
                 {"skill_name": "Vulnerability Assessment", "skill_type": "security", "demand_count": 17, "pct_of_total_postings": 85.0, "avg_yearly_salary": 142000, "median_yearly_salary": 138000, "p25_salary": 110000, "p75_salary": 175000},
@@ -789,7 +783,6 @@ class WebBIHandler(BaseHTTPRequestHandler):
         except Exception as e:
             logger.error(f"Jobs feed error: {e}")
 
-        # Fallback sample jobs
         sample_jobs = [
             {"job_id": 2001, "title": "Senior Ethical Hacker & Penetration Tester", "role_category": "Ethical Hacker", "company": "CyberShield Security", "company_logo": "", "location": "Austin, TX, US", "country": "United States", "seniority": "Senior", "salary_raw": 165000, "salary_str": "$165,000/yr", "posted_date": "2024-01-15", "is_remote": True, "no_degree": True, "health_insurance": True, "skills": ["Penetration Testing", "Kali Linux", "Vulnerability Assessment", "Python", "Bash"], "apply_link": "#"},
             {"job_id": 2002, "title": "Lead AI Prompt Engineer & LLM Evaluator", "role_category": "AI Prompt Engineer", "company": "AI & NextGen Labs", "company_logo": "", "location": "San Francisco, CA, US", "country": "United States", "seniority": "Senior", "salary_raw": 175000, "salary_str": "$175,000/yr", "posted_date": "2024-01-15", "is_remote": True, "no_degree": True, "health_insurance": True, "skills": ["Prompt Engineering", "Python", "LangChain", "OpenAI API", "NLP"], "apply_link": "#"},
@@ -820,7 +813,6 @@ class WebBIHandler(BaseHTTPRequestHandler):
         """Interactive Career & Skill Gap Analyzer."""
         user_skills = [s.strip().lower() for s in current_skills_str.split(',') if s.strip()]
         
-        # Skill requirements matrix by target role
         requirements = {
             "Data Engineer": [
                 {"name": "SQL", "type": "programming", "demand_pct": 82.5, "salary_impact": "+$12,000", "priority": "Essential Baseline"},
